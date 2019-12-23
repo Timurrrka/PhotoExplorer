@@ -1,4 +1,4 @@
-package ru.musintimur.photoexplorer.ui.dashboard
+package ru.musintimur.photoexplorer.ui.categories
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,20 +10,20 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import ru.musintimur.photoexplorer.R
 
-class DashboardFragment : Fragment() {
+class CategoriesFragment : Fragment() {
 
-    private lateinit var dashboardViewModel: DashboardViewModel
+    private lateinit var categoriesViewModel: CategoriesViewModel
 
     override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View? {
-        dashboardViewModel =
-                ViewModelProviders.of(this).get(DashboardViewModel::class.java)
-        val root = inflater.inflate(R.layout.fragment_dashboard, container, false)
+        categoriesViewModel =
+                ViewModelProviders.of(this).get(CategoriesViewModel::class.java)
+        val root = inflater.inflate(R.layout.fragment_categories, container, false)
         val textView: TextView = root.findViewById(R.id.text_dashboard)
-        dashboardViewModel.text.observe(this, Observer {
+        categoriesViewModel.text.observe(this, Observer {
             textView.text = it
         })
         return root
