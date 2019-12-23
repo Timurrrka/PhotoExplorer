@@ -2,6 +2,8 @@
     <string name="app_name">Photo Explorer</string>
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
     <string name="title_categories">Categories</string>
+    <string name="image_item">Image item</string>
+    <string name="error_api_key_empty">Access Key is empty! Please, provide it in string resources as api_key.</string>
+    <string name="photo_of_the_day">Photo of the day by\n%1$s</string>
 </resources>
