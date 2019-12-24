@@ -7,8 +7,8 @@
             android:title="@string/title_home"/>
 
     <item
-            android:id="@+id/navigation_categories"
-            android:icon="@drawable/image_categories"
-            android:title="@string/title_categories"/>
+            android:id="@+id/navigation_collections"
+            android:icon="@drawable/image_collections"
+            android:title="@string/title_collections"/>
 
 </menu>
