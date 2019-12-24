@@ -7,4 +7,9 @@
     <string name="error_api_key_empty">Access Key is empty! Please, provide it in string resources as api_key.</string>
     <string name="photo_of_the_day">Photo of the day by\n%1$s</string>
     <string name="collection_title">Collection Title</string>
+    <string name="detail_stub_title">Photo Title</string>
+    <string name="detail_stub_author">Photo Author</string>
+    <string name="detail_stub_dimensions">Photo Dimensions</string>
+    <string name="detail_stub_link_fill">Link to full-size photo</string>
+    <string name="detail_dimensions">See full-size %1$dx%2$d photo on</string>
 </resources>

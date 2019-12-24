@@ -1,5 +1,6 @@
 package ru.musintimur.photoexplorer.ui.home
 
+import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,8 +13,10 @@ import androidx.lifecycle.ViewModelProviders
 import com.google.gson.Gson
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.fragment_home.*
+import ru.musintimur.photoexplorer.OnPhotoClick
 import ru.musintimur.photoexplorer.R
 import ru.musintimur.photoexplorer.data.Photo
+import java.lang.RuntimeException
 
 private const val TAG = "HomeFragment"
 
@@ -37,22 +40,33 @@ class HomeFragment : Fragment() {
                         lastDownload = it.getLong("lastDownload", 0)
                         lastPhoto = Gson().fromJson(it.getString("lastPhoto", ""), Photo::class.java)
                     }
-                    photo.observe(this@HomeFragment, Observer {
-                        text_home.text = getString(R.string.photo_of_the_day, it.author)
+                    photo.observe(this@HomeFragment, Observer { photo ->
+                        text_home.text = getString(R.string.photo_of_the_day, photo.author)
                         Picasso.get()
-                            .load(it.url_small)
+                            .load(photo.url_small)
                             .placeholder(R.drawable.image_placeholder)
                             .error(R.drawable.image_placeholder)
                             .into(photoOfTheDay)
-                        if (it != Gson().fromJson(prefs?.getString("lastPhotoId", ""), Photo::class.java)) {
+                        if (photo != Gson().fromJson(prefs?.getString("lastPhotoId", ""), Photo::class.java)) {
                             prefs?.edit {
-                                putString("lastPhoto", Gson().toJson(it, Photo::class.java))
+                                putString("lastPhoto", Gson().toJson(photo, Photo::class.java))
                                 putLong("lastDownload", System.currentTimeMillis())
                             }
+                        }
+                        photoOfTheDay.setOnClickListener {
+                            (activity as OnPhotoClick?)?.onPhotoClick(photo)
                         }
                     })
                 }
 
+
         return root
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context !is OnPhotoClick) {
+            throw RuntimeException("${context.toString()} must implement OnPhotoClick")
+        }
     }
 }

@@ -29,6 +29,8 @@
                     tools:text="@string/collection_title"
                     android:layout_marginStart="8dp"
                     android:layout_marginEnd="8dp"
+                    android:textStyle="bold"
+                    android:textSize="24sp"
                     />
 
             <ImageView
