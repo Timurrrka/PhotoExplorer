@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.navArgs
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.fragment_photo.*
@@ -42,6 +43,7 @@ class PhotoFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        (context as AppCompatActivity).supportActionBar?.title = ""
         photo?.run {
             if (description.isNullOrEmpty() || description=="null") {
                 detail_description.visibility = View.GONE

@@ -8,6 +8,8 @@ import org.json.JSONObject
 import ru.musintimur.photoexplorer.utils.logD
 import ru.musintimur.photoexplorer.utils.logE
 
+private const val TAG = "Collection"
+
 @Parcelize
 data class Collection (val id: Int,
                        val title: String,
@@ -28,16 +30,18 @@ fun getCollectionsFromJson(data: String): List<Collection> {
 
     try {
         val photosArray = JSONArray(data)
+        "${photosArray.length()} photos founded in array".logD(TAG)
         for (i in 0 until photosArray.length()) {
             val jsonCollection = photosArray.getJSONObject(i)
             val newCollection = getCollectionFromJson(jsonCollection)
+            "$i) $newCollection".logD(TAG)
             collections.add(newCollection)
         }
     } catch (e: JSONException) {
         e.printStackTrace()
-        "Error processing Json data: ${e.message}".logE()
+        "Error processing Json data: ${e.message}".logE(TAG)
     }
 
-    "Photos from json:\n$collections".logD()
+    "Collections from json:\n$collections".logD(TAG)
     return collections
 }

@@ -43,6 +43,11 @@
         <argument
                 android:name="argCollection"
                 app:argType="ru.musintimur.photoexplorer.data.Collection"/>
+
+        <action
+            android:id="@+id/action_open_photo"
+            app:destination="@+id/navigation_photo"/>
+
     </fragment>
 
 

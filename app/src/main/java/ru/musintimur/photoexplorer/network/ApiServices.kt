@@ -26,7 +26,7 @@ interface ApiServices {
     @GET("collections")
     suspend fun collectionsPage(
         @Query("page") page: Int = 1,
-        @Query("per_page") count: Int = 10
+        @Query("per_page") per_page: Int = 10
     ): Response<String>
 
     @Headers(HEADER_CONTENT_TYPE, HEADER_ACCEPT_VERSION)
@@ -34,7 +34,7 @@ interface ApiServices {
     suspend fun photoCollection(
         @Path("id") id: Int,
         @Query("page") page: Int = 1,
-        @Query("per_page") count: Int = 10
+        @Query("per_page") per_page: Int = 10
     ): Response<String>
 
 }

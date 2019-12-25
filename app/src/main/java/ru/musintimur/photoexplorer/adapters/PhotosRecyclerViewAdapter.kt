@@ -12,6 +12,8 @@ import ru.musintimur.photoexplorer.data.Photo
 class PhotosRecyclerViewAdapter(private val photos: MutableSet<Photo>)
     : RecyclerView.Adapter<PhotosRecyclerViewAdapter.Companion.PhotosRecyclerViewHolder>() {
 
+    var onItemClick: ((Photo) -> Unit)? = null
+
     companion object {
         class PhotosRecyclerViewHolder(view: View) : RecyclerView.ViewHolder(view)
     }
@@ -38,6 +40,7 @@ class PhotosRecyclerViewAdapter(private val photos: MutableSet<Photo>)
                 .placeholder(R.drawable.image_placeholder)
                 .error(R.drawable.image_placeholder)
                 .into(collectionCover)
+            collectionCover.setOnClickListener { onItemClick?.invoke(photo) }
         }
     }
 }
