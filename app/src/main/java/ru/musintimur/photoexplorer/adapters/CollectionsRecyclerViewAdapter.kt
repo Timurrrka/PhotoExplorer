@@ -9,16 +9,18 @@ import kotlinx.android.synthetic.main.collection_item.view.*
 import ru.musintimur.photoexplorer.R
 import ru.musintimur.photoexplorer.data.Collection
 
-class CollectionsRecyclerViewAdapter(private val collections: MutableSet<Collection>)
-    : RecyclerView.Adapter<CollectionsRecyclerViewAdapter.Companion.CollectionsViewHolder>() {
+class CollectionsRecyclerViewAdapter(private val collections: MutableSet<Collection>) :
+    RecyclerView.Adapter<CollectionsRecyclerViewAdapter.Companion.CollectionsViewHolder>() {
+
+    var onItemClick: ((Collection) -> Unit)? = null
+
+    companion object {
+        class CollectionsViewHolder(view: View) : RecyclerView.ViewHolder(view)
+    }
 
     fun addCollections(newCollections: List<Collection>) {
         collections.addAll(newCollections)
         notifyDataSetChanged()
-    }
-
-    companion object {
-        class CollectionsViewHolder(view: View) : RecyclerView.ViewHolder(view)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CollectionsViewHolder {
@@ -32,13 +34,15 @@ class CollectionsRecyclerViewAdapter(private val collections: MutableSet<Collect
 
     override fun onBindViewHolder(holder: CollectionsViewHolder, position: Int) {
         val collection = collections.elementAt(position)
-                holder.itemView.run {
+        holder.itemView.run {
             collectionTitle.text = collection.title
             Picasso.get()
                 .load(collection.coverPhoto.url_small)
                 .placeholder(R.drawable.image_placeholder)
                 .error(R.drawable.image_placeholder)
                 .into(collectionCover)
+            collectionTitle.setOnClickListener { onItemClick?.invoke(collection) }
+            collectionCover.setOnClickListener { onItemClick?.invoke(collection) }
         }
     }
 }

@@ -29,4 +29,12 @@ interface ApiServices {
         @Query("per_page") count: Int = 10
     ): Response<String>
 
+    @Headers(HEADER_CONTENT_TYPE, HEADER_ACCEPT_VERSION)
+    @GET("/collections/{id}/photos")
+    suspend fun photoCollection(
+        @Path("id") id: Int,
+        @Query("page") page: Int = 1,
+        @Query("per_page") count: Int = 10
+    ): Response<String>
+
 }

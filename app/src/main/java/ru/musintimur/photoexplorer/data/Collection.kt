@@ -1,14 +1,17 @@
 package ru.musintimur.photoexplorer.data
 
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import ru.musintimur.photoexplorer.utils.logD
 import ru.musintimur.photoexplorer.utils.logE
 
+@Parcelize
 data class Collection (val id: Int,
                        val title: String,
-                       val coverPhoto: Photo)
+                       val coverPhoto: Photo) : Parcelable
 
 fun getCollectionFromJson(jsonCollection: JSONObject): Collection {
     val id = jsonCollection.getInt("id")

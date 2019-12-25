@@ -1,24 +1,18 @@
 package ru.musintimur.photoexplorer.ui.photo
 
 import android.content.ActivityNotFoundException
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.text.Html
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.text.HtmlCompat
 import androidx.navigation.fragment.navArgs
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.fragment_photo.*
 import kotlinx.android.synthetic.main.item_link_full.*
-import ru.musintimur.photoexplorer.MainActivity
 import ru.musintimur.photoexplorer.R
 import ru.musintimur.photoexplorer.data.Photo
 import ru.musintimur.photoexplorer.utils.logD
