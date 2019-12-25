@@ -9,12 +9,27 @@
             android:id="@+id/navigation_home"
             android:name="ru.musintimur.photoexplorer.ui.home.HomeFragment"
             android:label="@string/title_home"
-            tools:layout="@layout/fragment_home"/>
+            tools:layout="@layout/fragment_home">
+
+        <action
+                android:id="@+id/action_home_to_photo"
+                app:destination="@+id/navigation_photo"/>
+    </fragment>
 
     <fragment
             android:id="@+id/navigation_collections"
             android:name="ru.musintimur.photoexplorer.ui.collections.CollectionsFragment"
             android:label="@string/title_collections"
             tools:layout="@layout/fragment_collections"/>
+
+    <fragment
+            android:id="@+id/navigation_photo"
+            android:name="ru.musintimur.photoexplorer.ui.photo.PhotoFragment"
+            tools:layout="@layout/fragment_photo">
+        <argument
+                android:name="argPhoto"
+                app:argType="ru.musintimur.photoexplorer.data.Photo"/>
+    </fragment>
+
 
 </navigation>

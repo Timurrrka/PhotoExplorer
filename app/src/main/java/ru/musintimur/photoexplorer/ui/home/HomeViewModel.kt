@@ -43,7 +43,11 @@ class HomeViewModel : ViewModel() {
     }
 
     private fun daysGone(lastTime: Long) : Long {
-        val days = TimeUnit.MILLISECONDS.toDays(System.currentTimeMillis()) - TimeUnit.MILLISECONDS.toDays(lastTime)
+        val d1 = TimeUnit.MILLISECONDS.toDays(System.currentTimeMillis())
+        val d2 = TimeUnit.MILLISECONDS.toDays(lastTime)
+        "Today: $d1".logD(TAG)
+        "Old day: $d2".logD(TAG)
+        val days = d1 - d2
         "Days gone: $days".logD(TAG)
         return days
     }

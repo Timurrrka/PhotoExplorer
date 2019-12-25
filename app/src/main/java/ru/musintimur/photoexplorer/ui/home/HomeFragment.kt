@@ -10,12 +10,15 @@ import androidx.core.content.edit
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.fragment.findNavController
 import com.google.gson.Gson
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.fragment_home.*
 import ru.musintimur.photoexplorer.OnPhotoClick
 import ru.musintimur.photoexplorer.R
 import ru.musintimur.photoexplorer.data.Photo
+import ru.musintimur.photoexplorer.ui.photo.PhotoFragment
+import ru.musintimur.photoexplorer.ui.photo.PhotoFragmentArgs
 import java.lang.RuntimeException
 
 private const val TAG = "HomeFragment"
@@ -54,7 +57,9 @@ class HomeFragment : Fragment() {
                             }
                         }
                         photoOfTheDay.setOnClickListener {
-                            (activity as OnPhotoClick?)?.onPhotoClick(photo)
+                            //(activity as OnPhotoClick?)?.onPhotoClick(photo)
+                            val action = HomeFragmentDirections.actionHomeToPhoto(photo)
+                            findNavController().navigate(action)
                         }
                     })
                 }
@@ -63,10 +68,10 @@ class HomeFragment : Fragment() {
         return root
     }
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        if (context !is OnPhotoClick) {
-            throw RuntimeException("${context.toString()} must implement OnPhotoClick")
-        }
-    }
+//    override fun onAttach(context: Context) {
+//        super.onAttach(context)
+//        if (context !is OnPhotoClick) {
+//            throw RuntimeException("${context.toString()} must implement OnPhotoClick")
+//        }
+//    }
 }

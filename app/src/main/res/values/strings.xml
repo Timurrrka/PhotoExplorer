@@ -11,5 +11,10 @@
     <string name="detail_stub_author">Photo Author</string>
     <string name="detail_stub_dimensions">Photo Dimensions</string>
     <string name="detail_stub_link_fill">Link to full-size photo</string>
-    <string name="detail_dimensions">See full-size %1$dx%2$d photo on</string>
+    <string name="detail_dimensions">See full-size %1$dx%2$d photo on </string>
+    <string name="detail_link_full"><u>unsplash.com</u></string>
+    <string name="about_url_error">No browser application found, cannot visit world-wide web</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
