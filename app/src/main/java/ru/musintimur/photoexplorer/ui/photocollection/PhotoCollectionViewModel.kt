@@ -1,44 +1,46 @@
 package ru.musintimur.photoexplorer.ui.photocollection
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import ru.musintimur.photoexplorer.data.Collection
-import ru.musintimur.photoexplorer.data.Photo
-import ru.musintimur.photoexplorer.data.getCollectionsFromJson
-import ru.musintimur.photoexplorer.data.getPhotosFromJson
-import ru.musintimur.photoexplorer.network.ApiServices
-import ru.musintimur.photoexplorer.network.getApiService
-import ru.musintimur.photoexplorer.network.getDataAsync
+import androidx.lifecycle.viewModelScope
+import androidx.paging.DataSource
+import androidx.paging.LivePagedListBuilder
+import androidx.paging.PagedList
+import ru.musintimur.photoexplorer.data.photo.Photo
+import ru.musintimur.photoexplorer.data.photo.PhotoDataSource
 import ru.musintimur.photoexplorer.utils.logD
 
 private const val TAG = "PhotoCollectionViewModel"
 
 class PhotoCollectionViewModel : ViewModel() {
 
-    lateinit var api_key: String
-    val apiServices: ApiServices by lazy { getApiService(api_key) }
+    lateinit var apiKey: String
     var colId: Int = 0
+    var query: String = ""
     var page: Int = 1
-    var perPage: Int = 10
+    private val _album: LiveData<PagedList<Photo>>
 
-    private val _album = MutableLiveData<List<Photo>>().apply {
-        CoroutineScope(Dispatchers.Main).launch {
-            value = loadPhotos()
-        }
+    init {
+        "PhotoCollectionViewModel initialized!".logD(TAG)
+        val config = PagedList.Config.Builder()
+            .setPageSize(10)
+            .setEnablePlaceholders(false)
+            .build()
+        _album = getPagedListBuilder(config).build()
     }
-    var album: LiveData<List<Photo>> = _album
 
-    suspend fun loadPhotos(): List<ru.musintimur.photoexplorer.data.Photo> =
-        withContext(Dispatchers.IO) {
-            getDataAsync(apiServices.photoCollection(colId, page, perPage)).let { data ->
-                "Json data recieved:\n$data".logD(TAG)
-                getPhotosFromJson(data)
+    fun getAlbum(): LiveData<PagedList<Photo>> = _album
+
+    private fun getPagedListBuilder(config: PagedList.Config)
+            : LivePagedListBuilder<Int, Photo> {
+
+        val dataSourceFactory = object : DataSource.Factory<Int, Photo>() {
+            override fun create(): DataSource<Int, Photo> {
+                "DataSource.Factory create called".logD(TAG)
+                return PhotoDataSource(viewModelScope, apiKey, colId, query, page)
             }
         }
+        return LivePagedListBuilder<Int, Photo>(dataSourceFactory, config)
+    }
 
 }

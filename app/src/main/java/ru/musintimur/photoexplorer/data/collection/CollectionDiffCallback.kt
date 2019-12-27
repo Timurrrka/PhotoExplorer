@@ -1,4 +1,4 @@
-package ru.musintimur.photoexplorer.data
+package ru.musintimur.photoexplorer.data.collection
 
 import androidx.recyclerview.widget.DiffUtil
 

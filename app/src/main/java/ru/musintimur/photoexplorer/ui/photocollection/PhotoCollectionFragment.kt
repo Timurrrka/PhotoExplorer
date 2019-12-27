@@ -1,6 +1,5 @@
 package ru.musintimur.photoexplorer.ui.photocollection
 
-
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -15,23 +14,23 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.fragment_photo_collection.*
 import ru.musintimur.photoexplorer.R
 import ru.musintimur.photoexplorer.adapters.PhotosRecyclerViewAdapter
-import ru.musintimur.photoexplorer.data.Collection
-import ru.musintimur.photoexplorer.ui.collections.CollectionsFragmentDirections
 import ru.musintimur.photoexplorer.utils.logD
 
-private const val TAG = "FragmentPhotoCollection"
+private const val TAG = "PhotoCollectionFragment"
 
 class PhotoCollectionFragment : Fragment() {
 
     private val args: PhotoCollectionFragmentArgs by navArgs()
-    private lateinit var collection : Collection
+    private var collectionId: Int = 0
+    private var tagName: String = ""
     private lateinit var photoCollectionViewModel: PhotoCollectionViewModel
-    private val photosRecyclerViewAdapter = PhotosRecyclerViewAdapter(mutableSetOf())
+    private val photosRecyclerViewAdapter = PhotosRecyclerViewAdapter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        collection = args.argCollection
-        "Data from bundle:\n$collection".logD(TAG)
+        collectionId = args.argCollectionId
+        tagName = args.argQuery
+        "Data from bundle:\n$collectionId\n$tagName".logD(TAG)
     }
 
     override fun onCreateView(
@@ -40,10 +39,11 @@ class PhotoCollectionFragment : Fragment() {
     ): View? {
         photoCollectionViewModel =
             ViewModelProviders.of(this).get(PhotoCollectionViewModel::class.java).apply {
-                api_key = getString(R.string.api_key)
-                colId = collection.id
-                album.observe( this@PhotoCollectionFragment, Observer {
-                    photosRecyclerViewAdapter.addPhotos(it)
+                apiKey = getString(R.string.api_key)
+                colId = collectionId
+                query = tagName
+                getAlbum().observe( this@PhotoCollectionFragment, Observer {
+                    photosRecyclerViewAdapter.submitList(it)
                 })
             }
         return inflater.inflate(R.layout.fragment_photo_collection, container, false)
@@ -51,7 +51,7 @@ class PhotoCollectionFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        (context as AppCompatActivity).supportActionBar?.title = collection.title
+        (context as AppCompatActivity).supportActionBar?.title = tagName
         recyclerViewPhotoCollection.run {
             layoutManager = LinearLayoutManager(context)
             adapter = photosRecyclerViewAdapter

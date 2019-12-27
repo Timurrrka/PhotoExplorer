@@ -1,10 +1,12 @@
-package ru.musintimur.photoexplorer.data
+package ru.musintimur.photoexplorer.data.collection
 
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
+import ru.musintimur.photoexplorer.data.photo.Photo
+import ru.musintimur.photoexplorer.data.photo.getPhotoFromJson
 import ru.musintimur.photoexplorer.utils.logD
 import ru.musintimur.photoexplorer.utils.logE
 
@@ -13,7 +15,8 @@ private const val TAG = "Collection"
 @Parcelize
 data class Collection (val id: Int,
                        val title: String,
-                       val coverPhoto: Photo) : Parcelable
+                       val coverPhoto: Photo
+) : Parcelable
 
 fun getCollectionFromJson(jsonCollection: JSONObject): Collection {
     val id = jsonCollection.getInt("id")
@@ -33,7 +36,8 @@ fun getCollectionsFromJson(data: String): List<Collection> {
         "${photosArray.length()} photos founded in array".logD(TAG)
         for (i in 0 until photosArray.length()) {
             val jsonCollection = photosArray.getJSONObject(i)
-            val newCollection = getCollectionFromJson(jsonCollection)
+            val newCollection =
+                getCollectionFromJson(jsonCollection)
             "$i) $newCollection".logD(TAG)
             collections.add(newCollection)
         }

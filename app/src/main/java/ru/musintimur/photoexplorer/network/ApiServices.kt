@@ -37,4 +37,14 @@ interface ApiServices {
         @Query("per_page") per_page: Int = 10
     ): Response<String>
 
+    @Headers(HEADER_CONTENT_TYPE, HEADER_ACCEPT_VERSION)
+    @GET("/search/photos")
+    suspend fun queryPhotos(
+        @Query("query") query: String,
+        @Query("page") page: Int = 1,
+        @Query("collections") collections: String = "",
+        @Query("per_page") per_page: Int = 10
+
+    ): Response<String>
+
 }

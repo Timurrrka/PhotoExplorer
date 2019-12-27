@@ -13,8 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.fragment_collections.*
 import ru.musintimur.photoexplorer.R
 import ru.musintimur.photoexplorer.adapters.CollectionsRecyclerViewAdapter
-import ru.musintimur.photoexplorer.data.Collection
-import ru.musintimur.photoexplorer.ui.home.HomeFragmentDirections
+import ru.musintimur.photoexplorer.data.collection.Collection
 import ru.musintimur.photoexplorer.utils.logD
 
 private const val TAG = "CollectionsFragment"
@@ -32,7 +31,7 @@ class CollectionsFragment : Fragment() {
         "onCreateView called".logD(TAG)
         collectionsViewModel =
                 ViewModelProviders.of(this).get(CollectionsViewModel::class.java)
-        collectionsViewModel.api_key = getString(R.string.api_key)
+        collectionsViewModel.apiKey = getString(R.string.api_key)
 
         return inflater.inflate(R.layout.fragment_collections, container, false)
     }
@@ -43,7 +42,7 @@ class CollectionsFragment : Fragment() {
         recyclerViewCollections.layoutManager = LinearLayoutManager(context)
         recyclerViewCollections.adapter = collectionsAdapter
         collectionsAdapter.onItemClick = { collection ->
-            val action = CollectionsFragmentDirections.actionCollectionToPhotos(collection)
+            val action = CollectionsFragmentDirections.actionCollectionToPhotos(collection.id, collection.title)
             findNavController().navigate(action)
         }
         collectionsViewModel.getCollections().observe(this, Observer<PagedList<Collection>> {

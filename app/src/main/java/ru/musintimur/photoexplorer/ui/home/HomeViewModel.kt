@@ -4,8 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.*
-import ru.musintimur.photoexplorer.data.Photo
-import ru.musintimur.photoexplorer.data.getPhotosFromJson
+import ru.musintimur.photoexplorer.data.photo.Photo
+import ru.musintimur.photoexplorer.data.photo.getPhotosFromJson
 import ru.musintimur.photoexplorer.network.ApiServices
 import ru.musintimur.photoexplorer.network.getApiService
 import ru.musintimur.photoexplorer.network.getDataAsync
@@ -16,10 +16,10 @@ private const val TAG = "HomeViewModel"
 
 class HomeViewModel : ViewModel() {
 
-    lateinit var api_key: String
+    lateinit var apiKey: String
     var lastDownload: Long = 0L
     var lastPhoto: Photo? = null
-    val apiServices: ApiServices by lazy { getApiService(api_key) }
+    private val apiServices: ApiServices by lazy { getApiService(apiKey) }
 
     private val _photo = MutableLiveData<Photo>().apply {
         CoroutineScope(Dispatchers.Main).launch {

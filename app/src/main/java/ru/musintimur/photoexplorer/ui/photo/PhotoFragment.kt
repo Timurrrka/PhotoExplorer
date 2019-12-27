@@ -15,17 +15,14 @@ import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.fragment_photo.*
 import kotlinx.android.synthetic.main.item_link_full.*
 import ru.musintimur.photoexplorer.R
-import ru.musintimur.photoexplorer.data.Photo
+import ru.musintimur.photoexplorer.data.photo.Photo
 import ru.musintimur.photoexplorer.utils.logD
 
 private const val TAG = "PhotoFragment"
-//private const val ARG_PARAM = "argPhoto"
 
 class PhotoFragment : Fragment() {
     private val args: PhotoFragmentArgs by navArgs()
     private var photo : Photo? = null
-
-    //private var listener: OnFragmentInteractionListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -67,53 +64,5 @@ class PhotoFragment : Fragment() {
                 .error(R.drawable.image_placeholder)
                 .into(detail_photo)
         }
-
-
     }
-
-//    override fun onActivityCreated(savedInstanceState: Bundle?) {
-//        super.onActivityCreated(savedInstanceState)
-//        (context as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
-//    }
-
-//    override fun onAttach(context: Context) {
-//        super.onAttach(context)
-//        if (context is OnFragmentInteractionListener) {
-//            listener = context
-//        } else {
-//            throw RuntimeException(context.toString() + " must implement OnFragmentInteractionListener")
-//        }
-//        (context as AppCompatActivity).run {
-//            val navView: BottomNavigationView = findViewById(R.id.nav_view)
-//            val navController = findNavController(R.id.nav_host_fragment)
-//            // Passing each menu ID as a set of Ids because each
-//            // menu should be considered as top level destinations.
-//            val appBarConfiguration = AppBarConfiguration(
-//                setOf(
-//                    R.id.navigation_home, R.id.navigation_collections
-//                )
-//            )
-//            setupActionBarWithNavController(navController, appBarConfiguration)
-//            navView.setupWithNavController(navController)
-//        }
-//    }
-
-//    override fun onDetach() {
-//        super.onDetach()
-//        listener = null
-//    }
-//
-//    interface OnFragmentInteractionListener {
-//        fun onBackPressed()
-//    }
-
-//    companion object {
-//        @JvmStatic
-//        fun newInstance(photo: Photo?) =
-//            PhotoFragment().apply {
-//                arguments = Bundle().apply {
-//                    putParcelable(ARG_PARAM, photo)
-//                }
-//            }
-//    }
 }

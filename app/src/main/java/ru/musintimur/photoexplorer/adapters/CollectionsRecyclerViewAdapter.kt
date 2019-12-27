@@ -8,10 +8,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.collection_item.view.*
 import ru.musintimur.photoexplorer.R
-import ru.musintimur.photoexplorer.data.Collection
-import ru.musintimur.photoexplorer.data.CollectionDiffCallback
+import ru.musintimur.photoexplorer.data.collection.Collection
+import ru.musintimur.photoexplorer.data.collection.CollectionDiffCallback
 
-class CollectionsRecyclerViewAdapter() :
+class CollectionsRecyclerViewAdapter :
     PagedListAdapter<Collection, CollectionsRecyclerViewAdapter.Companion.CollectionsViewHolder>(CollectionDiffCallback()) {
 
     var onItemClick: ((Collection) -> Unit)? = null

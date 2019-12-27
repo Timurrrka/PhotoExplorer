@@ -1,4 +1,4 @@
-package ru.musintimur.photoexplorer.data
+package ru.musintimur.photoexplorer.data.photo
 
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
@@ -25,11 +25,19 @@ fun getPhotoFromJson(jsonPhoto: JSONObject): Photo {
     val width = jsonPhoto.getInt("width")
     val height = jsonPhoto.getInt("height")
     val urls = jsonPhoto.getJSONObject("urls")
-    val url_small = urls.getString("small")
-    val url_full = urls.getString("full")
+    val urlSmall = urls.getString("small")
+    val urlFull = urls.getString("full")
     val author = jsonPhoto.getJSONObject("user").getString("name")
 
-    return Photo(id, description, width, height, url_small, url_full, author)
+    return Photo(
+        id,
+        description,
+        width,
+        height,
+        urlSmall,
+        urlFull,
+        author
+    )
 }
 
 fun getPhotosFromJson(data: String): List<Photo> {
@@ -49,5 +57,20 @@ fun getPhotosFromJson(data: String): List<Photo> {
     }
 
     "Photos from json:\n$photos".logD()
+    return photos
+}
+
+fun getPhotosFromSearchResult(data: String): List<Photo> {
+    var photos: List<Photo> = listOf()
+
+    try {
+        val jsonObject = JSONObject(data)
+        val jsonPhotos = jsonObject.getString("results")
+        photos = getPhotosFromJson(jsonPhotos)
+    } catch (e: JSONException) {
+        e.printStackTrace()
+        "Error processing Json data: ${e.message}".logE()
+    }
+
     return photos
 }

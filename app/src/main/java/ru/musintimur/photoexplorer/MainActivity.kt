@@ -1,9 +1,13 @@
 package ru.musintimur.photoexplorer
 
+import android.app.SearchManager
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
+import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.Toast
+import android.widget.SearchView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
@@ -11,18 +15,21 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import kotlinx.android.synthetic.main.activity_main.*
-import ru.musintimur.photoexplorer.data.Photo
-import ru.musintimur.photoexplorer.ui.photo.PhotoFragment
+import ru.musintimur.photoexplorer.data.preferences.Preferences
+import ru.musintimur.photoexplorer.data.preferences.Properties
 import ru.musintimur.photoexplorer.utils.logD
 
 private const val TAG = "MainActivity"
 
 class MainActivity : AppCompatActivity()
-    //,OnPhotoClick
+    ,OnSearchClick
 {
-
     private lateinit var navController: NavController
+    private var searchFunction: (() -> Unit)? = null
+    private lateinit var searchView: SearchView
+    private lateinit var searchIcon: MenuItem
+    private lateinit var searchBar: MenuItem
+    private val prefs: SharedPreferences by lazy { getSharedPreferences(Preferences.PREFERENCES.fileName, Context.MODE_PRIVATE) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,8 +37,7 @@ class MainActivity : AppCompatActivity()
         val navView: BottomNavigationView = findViewById(R.id.nav_view)
 
         navController = findNavController(R.id.nav_host_fragment)
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
+
         val appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.navigation_home, R.id.navigation_collections
@@ -40,73 +46,70 @@ class MainActivity : AppCompatActivity()
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
 
-//        removePhotoPane()
-
-//        navView.setOnNavigationItemSelectedListener { menuItem ->
-//            when (menuItem.itemId) {
-//                R.id.navigation_home -> {
-//                    removePhotoPane()
-//                    setupActionBarWithNavController(navController, appBarConfiguration)
-//                    navView.setupWithNavController(navController)
-//                }
-//                R.id.navigation_collections -> {
-//                    removePhotoPane()
-//                    setupActionBarWithNavController(navController, appBarConfiguration)
-//                    navView.setupWithNavController(navController)
-//                }
-//                else -> Toast.makeText(this, "$menuItem pressed!", Toast.LENGTH_SHORT).show()
-//            }
-//            true
-//        }
     }
 
-//    private fun showPhotoPane() {
-//        "showPhotoPane called".logD(TAG)
-//        photo_detail_container.visibility = View.VISIBLE
-//        nav_host_fragment.view?.visibility = View.GONE
-//    }
-//
-//    private fun removePhotoPane() {
-//        "removePhotoPane called".logD(TAG)
-//        supportFragmentManager.run {
-//            val fragment = findFragmentById(R.id.photo_detail_container)
-//            if (fragment != null) {
-//                beginTransaction().remove(fragment).commit()
-//            }
-//        }
-//        photo_detail_container.visibility = View.GONE
-//        nav_host_fragment.view?.visibility = View.VISIBLE
-//        supportActionBar?.setDisplayHomeAsUpEnabled(false)
-//    }
-//
-//    private fun photoDetailsRequest(photo: Photo?) {
-//        "photoDetailsRequest called".logD(TAG)
-//        val newFragment = PhotoFragment.newInstance(photo)
-//        supportFragmentManager.beginTransaction()
-//            .replace(R.id.photo_detail_container, newFragment)
-//            .commit()
-//        showPhotoPane()
-//    }
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.main_menu, menu)
+        searchIcon = menu.findItem(R.id.menu_item_search)
+        searchBar = menu.findItem(R.id.app_bar_search)
+
+        val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
+        searchView = searchBar.actionView as SearchView
+        val searchableInfo = searchManager.getSearchableInfo(componentName)
+        searchView.run {
+            setSearchableInfo(searchableInfo)
+            isIconified = false
+            setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                override fun onQueryTextSubmit(query: String?): Boolean {
+                    prefs.edit().putString(Properties.PREF_SEARCH_QUERY.alias, query).apply()
+                    onSearchClick()
+                    hideSearchBar()
+                    return true
+                }
+
+                override fun onQueryTextChange(newText: String?): Boolean {
+                    return false
+                }
+            })
+            setOnCloseListener {
+                hideSearchBar()
+                true
+            }
+        }
+
+        return true
+    }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         "onOptionsItemSelected called".logD(TAG)
         when (item.itemId) {
             android.R.id.home -> navController.popBackStack()
+            R.id.menu_item_search -> showSearchBar()
         }
         return super.onOptionsItemSelected(item)
     }
 
-//    override fun onBackPressed() {
-//        "onBackPressed called".logD(TAG)
-//        supportFragmentManager.run {
-//            findFragmentById(R.id.photo_detail_container)?.let {
-//                "Removing fragment".logD(TAG)
-//                removePhotoPane()
-//            } ?: super.onBackPressed()
-//        }
-//    }
-//
-//    override fun onPhotoClick(photo: Photo) {
-//        photoDetailsRequest(photo)
-//    }
+    private fun showSearchBar() {
+        searchView.visibility = View.VISIBLE
+        searchBar.isVisible = true
+        searchIcon.isVisible = false
+        searchView.requestFocus()
+    }
+
+    private fun hideSearchBar() {
+        searchView.clearFocus()
+        searchView.visibility = View.GONE
+        searchBar.isVisible = false
+        searchIcon.isVisible = true
+    }
+
+    override fun onSearchClick() {
+        "search() called".logD(TAG)
+        searchFunction?.invoke()
+    }
+
+    override fun setOnSearchClick(onSearchClick: () -> Unit) {
+        "in setOnSearchClickListener".logD(TAG)
+        searchFunction = onSearchClick
+    }
 }

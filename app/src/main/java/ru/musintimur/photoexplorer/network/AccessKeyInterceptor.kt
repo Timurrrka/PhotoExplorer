@@ -1,23 +1,17 @@
 package ru.musintimur.photoexplorer.network
 
-import android.content.res.Resources
-import androidx.appcompat.app.AppCompatActivity
 import okhttp3.Interceptor
 import okhttp3.Response
-import ru.musintimur.photoexplorer.R
-import ru.musintimur.photoexplorer.utils.logE
 
-private const val TAG = "AccessKeyInterceptor"
-
-class AccessKeyInterceptor(private val api_key: String) : Interceptor {
+class AccessKeyInterceptor(private val apiKey: String) : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
         var request = chain.request()
 
         if (request.header("No-Authentication") == null) {
 
-            if (!api_key.isEmpty()) {
-                val finalToken = "Client-ID $api_key"
+            if (apiKey.isNotEmpty()) {
+                val finalToken = "Client-ID $apiKey"
                 request = request.newBuilder()
                     .addHeader("Authorization", finalToken)
                     .build()
