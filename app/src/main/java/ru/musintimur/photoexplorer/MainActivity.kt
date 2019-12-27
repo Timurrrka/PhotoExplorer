@@ -26,6 +26,7 @@ class MainActivity : AppCompatActivity()
 {
     private lateinit var navController: NavController
     private var searchFunction: (() -> Unit)? = null
+    private var searchHint: String = ""
     private lateinit var searchView: SearchView
     private lateinit var searchIcon: MenuItem
     private lateinit var searchBar: MenuItem
@@ -93,6 +94,7 @@ class MainActivity : AppCompatActivity()
         searchView.visibility = View.VISIBLE
         searchBar.isVisible = true
         searchIcon.isVisible = false
+        searchView.queryHint = searchHint
         searchView.requestFocus()
     }
 
@@ -108,8 +110,9 @@ class MainActivity : AppCompatActivity()
         searchFunction?.invoke()
     }
 
-    override fun setOnSearchClick(onSearchClick: () -> Unit) {
+    override fun setOnSearchClick(hintText: String, onSearchClick: () -> Unit) {
         "in setOnSearchClickListener".logD(TAG)
+        searchHint = hintText
         searchFunction = onSearchClick
     }
 }

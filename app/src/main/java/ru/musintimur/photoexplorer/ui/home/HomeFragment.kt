@@ -66,10 +66,14 @@ class HomeFragment : Fragment() {
     override fun onAttach(context: Context) {
         super.onAttach(context)
         if (context !is OnSearchClick) {
-            throw RuntimeException("$context must implement OnPhotoClick")
+            throw RuntimeException("$context must implement OnSearchClick")
         }
-        "onAttach: setting onSearchClick".logD(TAG)
-        context.setOnSearchClick {
+    }
+
+    override fun onResume() {
+        super.onResume()
+        "onResume: setting onSearchClick".logD(TAG)
+        (context as OnSearchClick).setOnSearchClick(getString(R.string.search_photos)) {
             val query = prefs?.getString(Properties.PREF_SEARCH_QUERY.alias, "") ?: ""
             "in setOnSearchClick: query=$query".logD(TAG)
             val action = HomeFragmentDirections.actionHomeSearchPhotos(0, query)

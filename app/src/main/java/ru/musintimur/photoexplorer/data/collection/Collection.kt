@@ -7,6 +7,7 @@ import org.json.JSONException
 import org.json.JSONObject
 import ru.musintimur.photoexplorer.data.photo.Photo
 import ru.musintimur.photoexplorer.data.photo.getPhotoFromJson
+import ru.musintimur.photoexplorer.data.photo.getPhotosFromJson
 import ru.musintimur.photoexplorer.utils.logD
 import ru.musintimur.photoexplorer.utils.logE
 
@@ -47,5 +48,20 @@ fun getCollectionsFromJson(data: String): List<Collection> {
     }
 
     "Collections from json:\n$collections".logD(TAG)
+    return collections
+}
+
+fun getCollectionsFromSearchResult(data: String): List<Collection> {
+    var collections: List<Collection> = listOf()
+
+    try {
+        val jsonObject = JSONObject(data)
+        val jsonCollections = jsonObject.getString("results")
+        collections = getCollectionsFromJson(jsonCollections)
+    } catch (e: JSONException) {
+        e.printStackTrace()
+        "Error processing Json data: ${e.message}".logE()
+    }
+
     return collections
 }

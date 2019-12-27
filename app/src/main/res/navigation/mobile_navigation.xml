@@ -24,10 +24,17 @@
             android:name="ru.musintimur.photoexplorer.ui.collections.CollectionsFragment"
             android:label="@string/title_collections"
             tools:layout="@layout/fragment_collections">
+        <argument
+            android:name="argQuery"
+            app:argType="string"
+            android:defaultValue=" "/>
 
         <action
             android:id="@+id/action_collection_to_photos"
             app:destination="@id/navigation_photo_collection"/>
+        <action
+                android:id="@+id/action_collection_search"
+                app:destination="@+id/navigation_collections"/>
     </fragment>
 
     <fragment
@@ -37,6 +44,9 @@
         <argument
                 android:name="argPhoto"
                 app:argType="ru.musintimur.photoexplorer.data.photo.Photo"/>
+        <action
+            android:id="@+id/action_search_photos"
+            app:destination="@id/navigation_photo_collection"/>
     </fragment>
 
     <fragment
@@ -53,6 +63,9 @@
         <action
             android:id="@+id/action_open_photo"
             app:destination="@+id/navigation_photo"/>
+        <action
+            android:id="@+id/action_search_in_collection"
+            app:destination="@id/navigation_photo_collection"/>
 
     </fragment>
 

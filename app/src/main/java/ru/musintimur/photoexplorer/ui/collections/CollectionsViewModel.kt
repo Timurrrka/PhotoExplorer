@@ -15,7 +15,7 @@ private const val TAG = "CollectionsViewModel"
 class CollectionsViewModel : ViewModel() {
 
     lateinit var apiKey: String
-
+    var query: String = ""
     private val _collection: LiveData<PagedList<Collection>>
 
     init {
@@ -35,7 +35,7 @@ class CollectionsViewModel : ViewModel() {
         val dataSourceFactory = object : DataSource.Factory<Int, Collection>() {
             override fun create(): DataSource<Int, Collection> {
                 "DataSource.Factory create called".logD(TAG)
-                return CollectionDataSource(viewModelScope, apiKey)
+                return CollectionDataSource(viewModelScope, apiKey, query)
             }
         }
         return LivePagedListBuilder<Int, Collection>(dataSourceFactory, config)
