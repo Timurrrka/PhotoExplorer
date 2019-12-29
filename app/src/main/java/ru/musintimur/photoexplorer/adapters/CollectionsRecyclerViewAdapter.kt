@@ -31,7 +31,7 @@ class CollectionsRecyclerViewAdapter :
                 val title = "${position.inc()}) ${collection.title}"
                 collectionTitle.text = title
                 Picasso.get()
-                    .load(collection.coverPhoto.url_small)
+                    .load(collection.coverPhoto?.url_small)
                     .placeholder(R.drawable.image_placeholder)
                     .error(R.drawable.image_placeholder)
                     .into(collectionCover)

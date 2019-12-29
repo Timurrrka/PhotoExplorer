@@ -6,9 +6,7 @@ import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.*
 import ru.musintimur.photoexplorer.data.photo.Photo
 import ru.musintimur.photoexplorer.data.photo.getPhotosFromJson
-import ru.musintimur.photoexplorer.network.ApiServices
-import ru.musintimur.photoexplorer.network.getApiService
-import ru.musintimur.photoexplorer.network.getDataAsync
+import ru.musintimur.photoexplorer.network.NetworkFactory
 import ru.musintimur.photoexplorer.utils.logD
 import java.util.concurrent.TimeUnit
 
@@ -19,26 +17,28 @@ class HomeViewModel : ViewModel() {
     lateinit var apiKey: String
     var lastDownload: Long = 0L
     var lastPhoto: Photo? = null
-    private val apiServices: ApiServices by lazy { getApiService(apiKey) }
+    lateinit var networkFactory: NetworkFactory
 
     private val _photo = MutableLiveData<Photo>().apply {
         CoroutineScope(Dispatchers.Main).launch {
             value = if (lastPhoto == null
                         || lastDownload == 0L
                         || daysGone(lastDownload) > 1)
-                        loadRandomPhoto().also {
+                        loadRandomPhoto()?.also {
                             lastPhoto = it
                             lastDownload = System.currentTimeMillis()
                         }
                     else lastPhoto
         }
     }
-    var photo: LiveData<Photo> = _photo
+    var photo: LiveData<Photo>? = _photo
 
-    private suspend fun loadRandomPhoto(): Photo = withContext(Dispatchers.IO) {
-        getDataAsync( apiServices.randomPhoto() ).let { data ->
-            "Json data recieved:\n$data".logD(TAG)
-            getPhotosFromJson(data).first()
+    private suspend fun loadRandomPhoto(): Photo? = withContext(Dispatchers.IO) {
+        networkFactory.run {
+            getDataAsync( apiServices.randomPhoto() )?.let { data ->
+                "Json data recieved:\n$data".logD(TAG)
+                getPhotosFromJson(data).firstOrNull()
+            }
         }
     }
 

@@ -5,22 +5,18 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import retrofit2.Response
-import ru.musintimur.photoexplorer.data.photo.Photo
-import ru.musintimur.photoexplorer.data.photo.getPhotosFromJson
-import ru.musintimur.photoexplorer.data.photo.getPhotosFromSearchResult
-import ru.musintimur.photoexplorer.network.getApiService
-import ru.musintimur.photoexplorer.network.getDataAsync
+import ru.musintimur.photoexplorer.network.NetworkFactory
 import ru.musintimur.photoexplorer.utils.logD
+import ru.musintimur.photoexplorer.utils.logE
 
 private const val TAG = "CollectionDataSource"
 
 class CollectionDataSource(
     private val scope: CoroutineScope,
-    api_key: String,
+    private val networkFactory: NetworkFactory,
     private val query: String = "",
     private val firstPage: Int = 1
 ) : PageKeyedDataSource<Int, Collection>() {
-    private val apiServices = getApiService(api_key)
     private var page: Int
 
     init {
@@ -39,16 +35,20 @@ class CollectionDataSource(
 
     override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, Collection>) {
         scope.launch {
-            getDataAsync(getApiData(firstPage)).let { data ->
-                "Json data recieved in loadInitial:\n$data".logD(TAG)
-                callback.onResult(getObjects(data), null, nextPage())
+            try {
+                networkFactory.getDataAsync(getApiData(firstPage))?.let { data ->
+                    "Json data recieved in loadInitial:\n$data".logD(TAG)
+                    callback.onResult(getObjects(data), null, nextPage())
+                }
+            } catch (e: Exception) {
+                e.message?.logE(TAG)
             }
         }
     }
 
     override fun loadAfter(params: LoadParams<Int>, callback: LoadCallback<Int, Collection>) {
         scope.launch {
-            getDataAsync(getApiData(params.key)).let { data ->
+            networkFactory.getDataAsync(getApiData(params.key))?.let { data ->
                 "Json data recieved in loadAfter:\n$data".logD(TAG)
                 callback.onResult(getObjects(data), nextPage())
             }
@@ -57,7 +57,7 @@ class CollectionDataSource(
 
     override fun loadBefore(params: LoadParams<Int>, callback: LoadCallback<Int, Collection>) {
         scope.launch {
-            getDataAsync(getApiData(params.key)).let { data ->
+            networkFactory.getDataAsync(getApiData(params.key))?.let { data ->
                 "Json data recieved in loadBefore:\n$data".logD(TAG)
                 callback.onResult(getObjects(data), prevPage())
             }
@@ -70,16 +70,18 @@ class CollectionDataSource(
     }
 
     private suspend fun getApiData(key: Int): Response<String> {
-        return when {
-            (query.isBlank()) -> apiServices.collectionsPage(key)
-            else -> apiServices.queryCollections(query, key)
-        }.also { "getApiData: ${it.body()}".logD(TAG) }
+        return networkFactory.run {
+            when {
+                (query.isBlank()) -> apiServices.collectionsPage(key)
+                else -> apiServices.queryCollections(query, key)
+            }
+        }
     }
 
-    private fun getObjects(data: String): List<Collection> {
-        return when {
-            (query.isBlank()) -> getCollectionsFromJson(data)
-            else -> getCollectionsFromSearchResult(data)
-        }.also { "getObjects: $it".logD(TAG) }
+        private fun getObjects(data: String): List<Collection> {
+            return when {
+                (query.isBlank()) -> getCollectionsFromJson(data)
+                else -> getCollectionsFromSearchResult(data)
+            }
+        }
     }
-}

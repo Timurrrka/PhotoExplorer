@@ -8,13 +8,14 @@ import androidx.paging.LivePagedListBuilder
 import androidx.paging.PagedList
 import ru.musintimur.photoexplorer.data.collection.Collection
 import ru.musintimur.photoexplorer.data.collection.CollectionDataSource
+import ru.musintimur.photoexplorer.network.NetworkFactory
 import ru.musintimur.photoexplorer.utils.logD
 
 private const val TAG = "CollectionsViewModel"
 
 class CollectionsViewModel : ViewModel() {
 
-    lateinit var apiKey: String
+    lateinit var networkFactory: NetworkFactory
     var query: String = ""
     private val _collection: LiveData<PagedList<Collection>>
 
@@ -35,7 +36,7 @@ class CollectionsViewModel : ViewModel() {
         val dataSourceFactory = object : DataSource.Factory<Int, Collection>() {
             override fun create(): DataSource<Int, Collection> {
                 "DataSource.Factory create called".logD(TAG)
-                return CollectionDataSource(viewModelScope, apiKey, query)
+                return CollectionDataSource(viewModelScope, networkFactory, query)
             }
         }
         return LivePagedListBuilder<Int, Collection>(dataSourceFactory, config)

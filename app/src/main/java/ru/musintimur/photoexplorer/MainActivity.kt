@@ -8,29 +8,42 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.SearchView
-import com.google.android.material.bottomnavigation.BottomNavigationView
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import ru.musintimur.photoexplorer.data.preferences.Preferences
 import ru.musintimur.photoexplorer.data.preferences.Properties
+import ru.musintimur.photoexplorer.network.checkExceptionType
 import ru.musintimur.photoexplorer.utils.logD
+import ru.musintimur.photoexplorer.utils.logE
+
 
 private const val TAG = "MainActivity"
 
 class MainActivity : AppCompatActivity()
-    ,OnSearchClick
-{
+    , OnSearchClick
+    , NetworkCallback {
     private lateinit var navController: NavController
     private var searchFunction: (() -> Unit)? = null
     private var searchHint: String = ""
     private lateinit var searchView: SearchView
     private lateinit var searchIcon: MenuItem
     private lateinit var searchBar: MenuItem
-    private val prefs: SharedPreferences by lazy { getSharedPreferences(Preferences.PREFERENCES.fileName, Context.MODE_PRIVATE) }
+    private val prefs: SharedPreferences by lazy {
+        getSharedPreferences(
+            Preferences.PREFERENCES.fileName,
+            Context.MODE_PRIVATE
+        )
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,7 +59,6 @@ class MainActivity : AppCompatActivity()
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
-
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -76,8 +88,8 @@ class MainActivity : AppCompatActivity()
                 hideSearchBar()
                 true
             }
+            clearFocus()
         }
-
         return true
     }
 
@@ -114,5 +126,40 @@ class MainActivity : AppCompatActivity()
         "in setOnSearchClickListener".logD(TAG)
         searchHint = hintText
         searchFunction = onSearchClick
+    }
+
+    override fun onSuccess() {
+        "onSuccess called".logD(TAG)
+        CoroutineScope(Dispatchers.Main).launch {
+            layoutFragments.visibility = View.VISIBLE
+            (includeError as TextView).run {
+                visibility = View.GONE
+                text = ""
+            }
+        }
+    }
+
+    override fun onEmptyResult(message: String) {
+        "onEmptyResult called".logD(TAG)
+        CoroutineScope(Dispatchers.Main).launch {
+            layoutFragments.visibility = View.GONE
+            (includeError as TextView).run {
+                visibility = View.VISIBLE
+                text = message
+            }
+        }
+    }
+
+    override fun onError(e: Exception) {
+        "onError called".logD(TAG)
+        val errorMessage = checkExceptionType(e, TAG)
+        errorMessage.logE(TAG)
+        CoroutineScope(Dispatchers.Main).launch {
+            layoutFragments.visibility = View.GONE
+            (includeError as TextView).run {
+                visibility = View.VISIBLE
+                text = errorMessage
+            }
+        }
     }
 }

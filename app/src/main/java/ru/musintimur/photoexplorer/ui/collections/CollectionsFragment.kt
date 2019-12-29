@@ -14,21 +14,32 @@ import androidx.navigation.fragment.navArgs
 import androidx.paging.PagedList
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.fragment_collections.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import ru.musintimur.photoexplorer.NetworkCallback
 import ru.musintimur.photoexplorer.OnSearchClick
 import ru.musintimur.photoexplorer.R
 import ru.musintimur.photoexplorer.adapters.CollectionsRecyclerViewAdapter
 import ru.musintimur.photoexplorer.data.collection.Collection
 import ru.musintimur.photoexplorer.data.preferences.Preferences
 import ru.musintimur.photoexplorer.data.preferences.Properties
-import ru.musintimur.photoexplorer.ui.home.HomeFragmentDirections
+import ru.musintimur.photoexplorer.network.NetworkFactory
 import ru.musintimur.photoexplorer.utils.logD
 
 private const val TAG = "CollectionsFragment"
 
 class CollectionsFragment : Fragment() {
 
-    private val prefs: SharedPreferences? by lazy { context?.getSharedPreferences(Preferences.PREFERENCES.fileName, Context.MODE_PRIVATE) }
+    private val prefs: SharedPreferences? by lazy {
+        context?.getSharedPreferences(
+            Preferences.PREFERENCES.fileName,
+            Context.MODE_PRIVATE
+        )
+    }
     private lateinit var collectionsViewModel: CollectionsViewModel
+    private lateinit var networkCallback: NetworkCallback
     private val collectionsAdapter = CollectionsRecyclerViewAdapter()
     private val args: CollectionsFragmentArgs by navArgs()
     private var tagName: String = ""
@@ -41,16 +52,16 @@ class CollectionsFragment : Fragment() {
     }
 
     override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View? {
         "onCreateView called".logD(TAG)
         collectionsViewModel =
-                ViewModelProviders.of(this).get(CollectionsViewModel::class.java).apply {
-                    apiKey = getString(R.string.api_key)
-                    query = tagName
-                }
+            ViewModelProviders.of(this).get(CollectionsViewModel::class.java).apply {
+                networkFactory = NetworkFactory(getString(R.string.api_key), networkCallback)
+                query = tagName
+            }
 
         return inflater.inflate(R.layout.fragment_collections, container, false)
     }
@@ -65,8 +76,16 @@ class CollectionsFragment : Fragment() {
             findNavController().navigate(action)
         }
         collectionsViewModel.getCollections().observe(this, Observer<PagedList<Collection>> {
-            "Observer've got data\n$it".logD(TAG)
+            "Observer've got data\n$it\nsize=${it.size}".logD(TAG)
             collectionsAdapter.submitList(it)
+            CoroutineScope(Dispatchers.Default).launch {
+                delay(1000)
+                if (it.size == 0) {
+                    networkCallback.onEmptyResult("No results for your query.")
+                } else {
+                    networkCallback.onSuccess()
+                }
+            }
         })
     }
 
@@ -74,6 +93,11 @@ class CollectionsFragment : Fragment() {
         super.onAttach(context)
         if (context !is OnSearchClick) {
             throw RuntimeException("$context must implement OnSearchClick")
+        }
+        if (context !is NetworkCallback) {
+            throw RuntimeException("$context must implement NetworkCallback")
+        } else {
+            networkCallback = context
         }
     }
 

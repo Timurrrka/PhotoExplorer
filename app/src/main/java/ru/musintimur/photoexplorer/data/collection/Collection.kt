@@ -7,7 +7,6 @@ import org.json.JSONException
 import org.json.JSONObject
 import ru.musintimur.photoexplorer.data.photo.Photo
 import ru.musintimur.photoexplorer.data.photo.getPhotoFromJson
-import ru.musintimur.photoexplorer.data.photo.getPhotosFromJson
 import ru.musintimur.photoexplorer.utils.logD
 import ru.musintimur.photoexplorer.utils.logE
 
@@ -16,7 +15,7 @@ private const val TAG = "Collection"
 @Parcelize
 data class Collection (val id: Int,
                        val title: String,
-                       val coverPhoto: Photo
+                       val coverPhoto: Photo?
 ) : Parcelable
 
 fun getCollectionFromJson(jsonCollection: JSONObject): Collection {

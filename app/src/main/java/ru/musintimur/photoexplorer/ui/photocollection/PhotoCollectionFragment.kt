@@ -14,12 +14,17 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.fragment_photo_collection.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import ru.musintimur.photoexplorer.NetworkCallback
 import ru.musintimur.photoexplorer.OnSearchClick
 import ru.musintimur.photoexplorer.R
 import ru.musintimur.photoexplorer.adapters.PhotosRecyclerViewAdapter
 import ru.musintimur.photoexplorer.data.preferences.Preferences
 import ru.musintimur.photoexplorer.data.preferences.Properties
-import ru.musintimur.photoexplorer.ui.photo.PhotoFragmentDirections
+import ru.musintimur.photoexplorer.network.NetworkFactory
 import ru.musintimur.photoexplorer.utils.logD
 
 private const val TAG = "PhotoCollectionFragment"
@@ -31,6 +36,7 @@ class PhotoCollectionFragment : Fragment() {
     private var collectionId: Int = 0
     private var tagName: String = ""
     private lateinit var photoCollectionViewModel: PhotoCollectionViewModel
+    private lateinit var networkCallback: NetworkCallback
     private val photosRecyclerViewAdapter = PhotosRecyclerViewAdapter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,11 +52,19 @@ class PhotoCollectionFragment : Fragment() {
     ): View? {
         photoCollectionViewModel =
             ViewModelProviders.of(this).get(PhotoCollectionViewModel::class.java).apply {
-                apiKey = getString(R.string.api_key)
+                networkFactory = NetworkFactory(getString(R.string.api_key), networkCallback)
                 colId = collectionId
                 query = tagName
                 getAlbum().observe( this@PhotoCollectionFragment, Observer {
                     photosRecyclerViewAdapter.submitList(it)
+                    CoroutineScope(Dispatchers.Default).launch {
+                        delay(1000)
+                        if (it.size == 0) {
+                            networkCallback.onEmptyResult("No results for your query.")
+                        } else {
+                            networkCallback.onSuccess()
+                        }
+                    }
                 })
             }
         return inflater.inflate(R.layout.fragment_photo_collection, container, false)
@@ -73,6 +87,11 @@ class PhotoCollectionFragment : Fragment() {
         super.onAttach(context)
         if (context !is OnSearchClick) {
             throw RuntimeException("$context must implement OnSearchClick")
+        }
+        if (context !is NetworkCallback) {
+            throw RuntimeException("$context must implement NetworkCallback")
+        } else {
+            networkCallback = context
         }
     }
 

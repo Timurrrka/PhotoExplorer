@@ -17,12 +17,12 @@ import androidx.navigation.fragment.navArgs
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.fragment_photo.*
 import kotlinx.android.synthetic.main.item_link_full.*
+import ru.musintimur.photoexplorer.NetworkCallback
 import ru.musintimur.photoexplorer.OnSearchClick
 import ru.musintimur.photoexplorer.R
 import ru.musintimur.photoexplorer.data.photo.Photo
 import ru.musintimur.photoexplorer.data.preferences.Preferences
 import ru.musintimur.photoexplorer.data.preferences.Properties
-import ru.musintimur.photoexplorer.ui.home.HomeFragmentDirections
 import ru.musintimur.photoexplorer.utils.logD
 
 private const val TAG = "PhotoFragment"
@@ -77,6 +77,9 @@ class PhotoFragment : Fragment() {
         super.onAttach(context)
         if (context !is OnSearchClick) {
             throw RuntimeException("$context must implement OnSearchClick")
+        }
+        if (context !is NetworkCallback) {
+            throw RuntimeException("$context must implement NetworkCallback")
         }
     }
 
