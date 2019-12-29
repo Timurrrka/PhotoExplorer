@@ -14,20 +14,15 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.fragment_photo_collection.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import ru.musintimur.photoexplorer.NetworkCallback
 import ru.musintimur.photoexplorer.OnSearchClick
 import ru.musintimur.photoexplorer.R
 import ru.musintimur.photoexplorer.adapters.PhotosRecyclerViewAdapter
 import ru.musintimur.photoexplorer.data.preferences.Preferences
 import ru.musintimur.photoexplorer.data.preferences.Properties
+import ru.musintimur.photoexplorer.network.EmptyResultException
 import ru.musintimur.photoexplorer.network.NetworkFactory
-import ru.musintimur.photoexplorer.utils.logD
-
-private const val TAG = "PhotoCollectionFragment"
 
 class PhotoCollectionFragment : Fragment() {
 
@@ -38,12 +33,12 @@ class PhotoCollectionFragment : Fragment() {
     private lateinit var photoCollectionViewModel: PhotoCollectionViewModel
     private lateinit var networkCallback: NetworkCallback
     private val photosRecyclerViewAdapter = PhotosRecyclerViewAdapter()
+    private var job: Job? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         collectionId = args.argCollectionId
         tagName = args.argQuery
-        "Data from bundle:\n$collectionId\n$tagName".logD(TAG)
     }
 
     override fun onCreateView(
@@ -57,10 +52,10 @@ class PhotoCollectionFragment : Fragment() {
                 query = tagName
                 getAlbum().observe( this@PhotoCollectionFragment, Observer {
                     photosRecyclerViewAdapter.submitList(it)
-                    CoroutineScope(Dispatchers.Default).launch {
-                        delay(1000)
+                    job = CoroutineScope(Dispatchers.Default).launch {
+                        delay(3000)
                         if (it.size == 0) {
-                            networkCallback.onEmptyResult("No results for your query.")
+                            networkCallback.onError(EmptyResultException(getString(R.string.empty_result)))
                         } else {
                             networkCallback.onSuccess()
                         }
@@ -86,10 +81,10 @@ class PhotoCollectionFragment : Fragment() {
     override fun onAttach(context: Context) {
         super.onAttach(context)
         if (context !is OnSearchClick) {
-            throw RuntimeException("$context must implement OnSearchClick")
+            throw RuntimeException(getString(R.string.error_implement, context, "OnSearchClick"))
         }
         if (context !is NetworkCallback) {
-            throw RuntimeException("$context must implement NetworkCallback")
+            throw RuntimeException(getString(R.string.error_implement, context, "NetworkCallback"))
         } else {
             networkCallback = context
         }
@@ -97,12 +92,15 @@ class PhotoCollectionFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        "onResume: setting onSearchClick".logD(TAG)
         (context as OnSearchClick).setOnSearchClick(getString(R.string.search_photos_in_collection)) {
             val query = prefs?.getString(Properties.PREF_SEARCH_QUERY.alias, "") ?: ""
-            "in setOnSearchClick: query=$query".logD(TAG)
             val action = PhotoCollectionFragmentDirections.actionSearchInCollection(collectionId, query)
             findNavController().navigate(action)
         }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        job?.cancel()
     }
 }

@@ -96,12 +96,13 @@ class MainActivity : AppCompatActivity()
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         "onOptionsItemSelected called".logD(TAG)
         when (item.itemId) {
-            android.R.id.home -> navController.popBackStack()
-            R.id.menu_item_search -> showSearchBar()
+            android.R.id.home -> navController.popBackStack() //назад
+            R.id.menu_item_search -> showSearchBar() //поиск
         }
         return super.onOptionsItemSelected(item)
     }
 
+    //отображение поисковой панели
     private fun showSearchBar() {
         searchView.visibility = View.VISIBLE
         searchBar.isVisible = true
@@ -110,6 +111,7 @@ class MainActivity : AppCompatActivity()
         searchView.requestFocus()
     }
 
+    //сокрытие поисковой панели
     private fun hideSearchBar() {
         searchView.clearFocus()
         searchView.visibility = View.GONE
@@ -117,39 +119,31 @@ class MainActivity : AppCompatActivity()
         searchIcon.isVisible = true
     }
 
+    //запуск установленного механизма поиска и перехода в нужный фрагмент
     override fun onSearchClick() {
-        "search() called".logD(TAG)
         searchFunction?.invoke()
     }
 
+    //установка поискового механизма, использующегося во фрагменте
     override fun setOnSearchClick(hintText: String, onSearchClick: () -> Unit) {
         "in setOnSearchClickListener".logD(TAG)
         searchHint = hintText
         searchFunction = onSearchClick
     }
 
+    //установка элементов интерфейса при удачном сетевом запросе
     override fun onSuccess() {
         "onSuccess called".logD(TAG)
         CoroutineScope(Dispatchers.Main).launch {
             layoutFragments.visibility = View.VISIBLE
             (includeError as TextView).run {
                 visibility = View.GONE
-                text = ""
+                text = null
             }
         }
     }
 
-    override fun onEmptyResult(message: String) {
-        "onEmptyResult called".logD(TAG)
-        CoroutineScope(Dispatchers.Main).launch {
-            layoutFragments.visibility = View.GONE
-            (includeError as TextView).run {
-                visibility = View.VISIBLE
-                text = message
-            }
-        }
-    }
-
+    //отображение сообщения об ошибке
     override fun onError(e: Exception) {
         "onError called".logD(TAG)
         val errorMessage = checkExceptionType(e, TAG)
@@ -158,7 +152,7 @@ class MainActivity : AppCompatActivity()
             layoutFragments.visibility = View.GONE
             (includeError as TextView).run {
                 visibility = View.VISIBLE
-                text = errorMessage
+                text = if (text.isNullOrBlank()) errorMessage else text
             }
         }
     }

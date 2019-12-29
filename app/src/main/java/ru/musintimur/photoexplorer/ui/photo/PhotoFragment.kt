@@ -17,15 +17,13 @@ import androidx.navigation.fragment.navArgs
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.fragment_photo.*
 import kotlinx.android.synthetic.main.item_link_full.*
+import kotlinx.coroutines.Job
 import ru.musintimur.photoexplorer.NetworkCallback
 import ru.musintimur.photoexplorer.OnSearchClick
 import ru.musintimur.photoexplorer.R
 import ru.musintimur.photoexplorer.data.photo.Photo
 import ru.musintimur.photoexplorer.data.preferences.Preferences
 import ru.musintimur.photoexplorer.data.preferences.Properties
-import ru.musintimur.photoexplorer.utils.logD
-
-private const val TAG = "PhotoFragment"
 
 class PhotoFragment : Fragment() {
     private val prefs: SharedPreferences? by lazy { context?.getSharedPreferences(Preferences.PREFERENCES.fileName, Context.MODE_PRIVATE) }
@@ -35,7 +33,6 @@ class PhotoFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         photo = args.argPhoto
-        "Data from bundle:\n$photo".logD(TAG)
     }
 
     override fun onCreateView(
@@ -76,19 +73,17 @@ class PhotoFragment : Fragment() {
     override fun onAttach(context: Context) {
         super.onAttach(context)
         if (context !is OnSearchClick) {
-            throw RuntimeException("$context must implement OnSearchClick")
+            throw RuntimeException(getString(R.string.error_implement, context, "OnSearchClick"))
         }
         if (context !is NetworkCallback) {
-            throw RuntimeException("$context must implement NetworkCallback")
+            throw RuntimeException(getString(R.string.error_implement, context, "NetworkCallback"))
         }
     }
 
     override fun onResume() {
         super.onResume()
-        "onResume: setting onSearchClick".logD(TAG)
         (context as OnSearchClick).setOnSearchClick(getString(R.string.search_photos)) {
             val query = prefs?.getString(Properties.PREF_SEARCH_QUERY.alias, "") ?: ""
-            "in setOnSearchClick: query=$query".logD(TAG)
             val action = PhotoFragmentDirections.actionSearchPhotos(0, query)
             findNavController().navigate(action)
         }

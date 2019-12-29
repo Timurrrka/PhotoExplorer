@@ -14,16 +14,15 @@ import androidx.navigation.fragment.findNavController
 import com.google.gson.Gson
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.fragment_home.*
+import kotlinx.coroutines.*
 import ru.musintimur.photoexplorer.NetworkCallback
 import ru.musintimur.photoexplorer.OnSearchClick
 import ru.musintimur.photoexplorer.R
 import ru.musintimur.photoexplorer.data.photo.Photo
 import ru.musintimur.photoexplorer.data.preferences.Preferences
 import ru.musintimur.photoexplorer.data.preferences.Properties
+import ru.musintimur.photoexplorer.network.EmptyResultException
 import ru.musintimur.photoexplorer.network.NetworkFactory
-import ru.musintimur.photoexplorer.utils.logD
-
-private const val TAG = "HomeFragment"
 
 class HomeFragment : Fragment() {
 
@@ -34,6 +33,8 @@ class HomeFragment : Fragment() {
         )
     }
     private lateinit var homeViewModel: HomeViewModel
+    private lateinit var networkCallback: NetworkCallback
+    private var job: Job? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -51,6 +52,7 @@ class HomeFragment : Fragment() {
                 }
                 photo?.observe(this@HomeFragment, Observer { photo ->
                     photo?.let {
+                        networkCallback.onSuccess()
                         text_home.text = getString(R.string.photo_of_the_day, photo.author)
                         Picasso.get()
                             .load(photo.url_small)
@@ -71,8 +73,7 @@ class HomeFragment : Fragment() {
                             val action = HomeFragmentDirections.actionHomeToPhoto(photo)
                             findNavController().navigate(action)
                         }
-                    }
-
+                    } ?: networkCallback.onError(EmptyResultException(getString(R.string.empty_result)))
                 })
             }
         return root
@@ -81,22 +82,30 @@ class HomeFragment : Fragment() {
     override fun onAttach(context: Context) {
         super.onAttach(context)
         if (context !is OnSearchClick) {
-            throw RuntimeException("$context must implement OnSearchClick")
+            throw RuntimeException(getString(R.string.error_implement, context, "OnSearchClick"))
         }
         if (context !is NetworkCallback) {
-            throw RuntimeException("$context must implement NetworkCallback")
+            throw RuntimeException(getString(R.string.error_implement, context, "NetworkCallback"))
+        } else {
+            networkCallback = context
         }
     }
 
     override fun onResume() {
         super.onResume()
-        "onResume: setting onSearchClick".logD(TAG)
         (context as OnSearchClick).setOnSearchClick(getString(R.string.search_photos)) {
             val query = prefs?.getString(Properties.PREF_SEARCH_QUERY.alias, "") ?: ""
-            "in setOnSearchClick: query=$query".logD(TAG)
             val action = HomeFragmentDirections.actionHomeSearchPhotos(0, query)
             findNavController().navigate(action)
         }
+        job = CoroutineScope(Dispatchers.Default).launch {
+            homeViewModel.setPhoto()
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        job?.cancel()
     }
 
 }

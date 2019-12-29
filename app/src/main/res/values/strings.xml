@@ -1,25 +1,23 @@
 <resources>
     <string name="app_name">Photo Explorer</string>
     <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
     <string name="title_collections">Collections</string>
     <string name="image_item">Image item</string>
     <string name="error_api_key_empty">Access Key is empty! Please, provide it in string resources as api_key.</string>
     <string name="photo_of_the_day">Photo of the day by\n%1$s</string>
     <string name="collection_title">Collection Title</string>
-    <string name="detail_stub_title">Photo Title</string>
-    <string name="detail_stub_author">Photo Author</string>
-    <string name="detail_stub_dimensions">Photo Dimensions</string>
-    <string name="detail_stub_link_fill">Link to full-size photo</string>
+    <string name="detail_stub_title" translatable="false">Photo Title</string>
+    <string name="detail_stub_author" translatable="false">Photo Author</string>
+    <string name="detail_stub_dimensions" translatable="false">Photo Dimensions</string>
+    <string name="detail_stub_link_fill" translatable="false">Link to full-size photo</string>
     <string name="detail_dimensions">See full-size %1$dx%2$d photo on </string>
-    <string name="detail_link_full"><u>unsplash.com</u></string>
+    <string name="detail_link_full" translatable="false"><u>unsplash.com</u></string>
     <string name="about_url_error">No browser application found, cannot visit world-wide web</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="search">Search</string>
     <string name="search_photos">Search photos by tags</string>
     <string name="search_photos_in_collection">Search photos in this collection by tags</string>
     <string name="search_collections">Search collections by tags</string>
     <string name="error_message">Error message</string>
+    <string name="error_implement">%1$s must implement %2$s</string>
+    <string name="empty_result">No results for your query.</string>
 </resources>

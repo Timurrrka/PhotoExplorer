@@ -5,6 +5,7 @@
           android:layout_height="wrap_content"
           android:id="@+id/textError"
           tools:text="@string/error_message"
+          android:textColor="@color/colorPrimaryText"
         >
 
 </TextView>

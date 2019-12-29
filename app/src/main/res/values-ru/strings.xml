@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Photo Explorer</string>
+    <string name="about_url_error">Не найдено приложение-браузер, невозможно открыть веб-страницу</string>
+    <string name="collection_title">Наименование коллекции</string>
+    <string name="detail_dimensions">"Смотри полное %1$dx%2$d фото на "</string>
+    <string name="empty_result">Запрос не дал результатов.</string>
+    <string name="error_api_key_empty">Ключ API пуст! Пожалуйста, укажите его в строковых ресурсах как api_key.</string>
+    <string name="error_implement">%1$s должен реализовывать интерфейс %2$s</string>
+    <string name="error_message">Сообщение об ошибке</string>
+    <string name="image_item">Изображение</string>
+    <string name="photo_of_the_day">Фото дня от\n%1$s</string>
+    <string name="search">Поиск</string>
+    <string name="search_collections">Поиск коллекций по ключевым словам</string>
+    <string name="search_photos">Поиск фото по ключевым словам</string>
+    <string name="search_photos_in_collection">Поиск фото в коллекции по ключевым словам</string>
+    <string name="title_collections">Коллекции</string>
+    <string name="title_home">Главная</string>
+</resources>

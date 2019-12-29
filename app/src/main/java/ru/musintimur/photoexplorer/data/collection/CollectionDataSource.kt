@@ -37,7 +37,6 @@ class CollectionDataSource(
         scope.launch {
             try {
                 networkFactory.getDataAsync(getApiData(firstPage))?.let { data ->
-                    "Json data recieved in loadInitial:\n$data".logD(TAG)
                     callback.onResult(getObjects(data), null, nextPage())
                 }
             } catch (e: Exception) {
@@ -49,7 +48,6 @@ class CollectionDataSource(
     override fun loadAfter(params: LoadParams<Int>, callback: LoadCallback<Int, Collection>) {
         scope.launch {
             networkFactory.getDataAsync(getApiData(params.key))?.let { data ->
-                "Json data recieved in loadAfter:\n$data".logD(TAG)
                 callback.onResult(getObjects(data), nextPage())
             }
         }
@@ -58,7 +56,6 @@ class CollectionDataSource(
     override fun loadBefore(params: LoadParams<Int>, callback: LoadCallback<Int, Collection>) {
         scope.launch {
             networkFactory.getDataAsync(getApiData(params.key))?.let { data ->
-                "Json data recieved in loadBefore:\n$data".logD(TAG)
                 callback.onResult(getObjects(data), prevPage())
             }
         }

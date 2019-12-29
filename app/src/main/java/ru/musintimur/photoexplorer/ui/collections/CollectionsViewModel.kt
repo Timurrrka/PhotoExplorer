@@ -9,9 +9,6 @@ import androidx.paging.PagedList
 import ru.musintimur.photoexplorer.data.collection.Collection
 import ru.musintimur.photoexplorer.data.collection.CollectionDataSource
 import ru.musintimur.photoexplorer.network.NetworkFactory
-import ru.musintimur.photoexplorer.utils.logD
-
-private const val TAG = "CollectionsViewModel"
 
 class CollectionsViewModel : ViewModel() {
 
@@ -20,7 +17,6 @@ class CollectionsViewModel : ViewModel() {
     private val _collection: LiveData<PagedList<Collection>>
 
     init {
-        "CollectionsViewModel initialized!".logD(TAG)
         val config = PagedList.Config.Builder()
             .setPageSize(10)
             .setEnablePlaceholders(false)
@@ -35,7 +31,6 @@ class CollectionsViewModel : ViewModel() {
 
         val dataSourceFactory = object : DataSource.Factory<Int, Collection>() {
             override fun create(): DataSource<Int, Collection> {
-                "DataSource.Factory create called".logD(TAG)
                 return CollectionDataSource(viewModelScope, networkFactory, query)
             }
         }

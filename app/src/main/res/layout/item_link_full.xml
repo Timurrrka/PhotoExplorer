@@ -11,6 +11,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/detail_dimensions"
             tools:text="@string/detail_stub_dimensions"
+            android:textColor="@color/colorPrimaryText"
             />
 
     <TextView

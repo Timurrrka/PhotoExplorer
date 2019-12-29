@@ -41,6 +41,7 @@
                     android:layout_marginEnd="8dp"
                     android:layout_marginBottom="8dp"
                     tools:text="@string/detail_stub_title"
+                    android:textColor="@color/colorPrimaryText"
                     />
 
             <TextView
@@ -51,6 +52,7 @@
                     android:layout_marginEnd="8dp"
                     android:layout_marginBottom="8dp"
                     tools:text="@string/detail_stub_author"
+                    android:textColor="@color/colorPrimaryText"
                     />
 
             <include
@@ -60,6 +62,7 @@
                     android:layout_marginStart="8dp"
                     android:layout_marginEnd="8dp"
                     android:layout_marginBottom="8dp"
+                    android:textColor="@color/colorPrimaryText"
                     />
 
         </LinearLayout>

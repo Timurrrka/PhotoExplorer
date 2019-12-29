@@ -41,7 +41,6 @@ fun getPhotoFromJson(jsonPhoto: JSONObject): Photo {
 }
 
 fun getPhotosFromJson(data: String): List<Photo> {
-    "Json data for parsing:\n$data".logD()
     val photos = mutableListOf<Photo>()
 
     try {
@@ -52,11 +51,9 @@ fun getPhotosFromJson(data: String): List<Photo> {
             photos.add(newPhoto)
         }
     } catch (e: JSONException) {
-        e.printStackTrace()
-        "Error processing Json data: ${e.message}".logE()
+        e.stackTrace.toString().logE()
     }
 
-    "Photos from json:\n$photos".logD()
     return photos
 }
 
@@ -68,8 +65,7 @@ fun getPhotosFromSearchResult(data: String): List<Photo> {
         val jsonPhotos = jsonObject.getString("results")
         photos = getPhotosFromJson(jsonPhotos)
     } catch (e: JSONException) {
-        e.printStackTrace()
-        "Error processing Json data: ${e.message}".logE()
+        e.stackTrace.toString().logE()
     }
 
     return photos

@@ -11,6 +11,5 @@ interface OnSearchClick {
 //Интерфейс для отображения сетевых ошибок
 interface NetworkCallback {
     fun onSuccess()
-    fun onEmptyResult(message: String)
     fun onError(e: Exception)
 }

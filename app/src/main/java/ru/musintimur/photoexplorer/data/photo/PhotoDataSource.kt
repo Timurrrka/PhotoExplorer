@@ -6,7 +6,6 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import retrofit2.Response
 import ru.musintimur.photoexplorer.network.NetworkFactory
-import ru.musintimur.photoexplorer.utils.logD
 import ru.musintimur.photoexplorer.utils.logE
 
 private const val TAG = "PhotoDataSource"
@@ -20,7 +19,6 @@ class PhotoDataSource(private val scope: CoroutineScope,
     private var page: Int
 
     init {
-        "PhotoDataSource initialized".logD(TAG)
         page = firstPage
     }
 
@@ -37,7 +35,6 @@ class PhotoDataSource(private val scope: CoroutineScope,
         scope.launch {
             try {
                 networkFactory.getDataAsync(getApiData(firstPage))?.let { data ->
-                    "Json data recieved in loadInitial:\nrequestedLoadSize = ${params.requestedLoadSize}\n$data".logD(TAG)
                     callback.onResult(getObjects(data), null, nextPage())
                 }
             } catch (e: Exception) {
@@ -50,7 +47,6 @@ class PhotoDataSource(private val scope: CoroutineScope,
         scope.launch {
             try {
                 networkFactory.getDataAsync(getApiData(params.key))?.let { data ->
-                    "Json data recieved in loadAfter:\n$data".logD(TAG)
                     callback.onResult(getObjects(data), nextPage())
                 }
             } catch (e: Exception) {
@@ -63,7 +59,6 @@ class PhotoDataSource(private val scope: CoroutineScope,
         scope.launch {
             try {
                 networkFactory.getDataAsync(getApiData(params.key))?.let { data ->
-                    "Json data recieved in loadBefore:\n$data".logD(TAG)
                     callback.onResult(getObjects(data), prevPage())
                 }
             } catch (e: Exception) {

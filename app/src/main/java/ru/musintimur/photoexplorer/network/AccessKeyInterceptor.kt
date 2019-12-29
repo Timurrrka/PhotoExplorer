@@ -3,20 +3,11 @@ package ru.musintimur.photoexplorer.network
 import okhttp3.*
 import okhttp3.ResponseBody.Companion.toResponseBody
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import ru.musintimur.photoexplorer.utils.logD
 import kotlin.Exception
-
-private const val TAG = "AccessKeyInterceptor"
 
 class AccessKeyInterceptor(private val apiKey: String) : Interceptor {
 
-    init {
-        "AccessKeyInterceptor initialized".logD(TAG)
-    }
-
     override fun intercept(chain: Interceptor.Chain): Response {
-        "intercept called".logD(TAG)
-
         var request = chain.request()
 
         if (request.header("No-Authentication") == null) {

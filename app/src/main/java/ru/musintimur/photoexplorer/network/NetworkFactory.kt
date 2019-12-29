@@ -39,12 +39,15 @@ class NetworkFactory(private val apiKey: String, private val networkCallback: Ne
             requestFun.run {
                 if (isSuccessful)
                     if (body().isNullOrBlank()) {
-                        networkCallback.onError(IllegalStateException(message()))
+                        networkCallback.onError(IllegalStateException("Empty response\n${message()}"))
                     } else {
                         networkCallback.onSuccess()
                     }
                 else {
-                    networkCallback.onError(NetworkErrorException(message()))
+                    when (code()) {
+                        403 -> networkCallback.onError(LimitExceededException("Error ${code()}: Rate Limit Exceeded"))
+                        else -> networkCallback.onError(NetworkErrorException("Error ${code()}: ${message()}\n"))
+                    }
                 }
                 body()
             }

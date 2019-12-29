@@ -7,10 +7,7 @@ import kotlinx.coroutines.*
 import ru.musintimur.photoexplorer.data.photo.Photo
 import ru.musintimur.photoexplorer.data.photo.getPhotosFromJson
 import ru.musintimur.photoexplorer.network.NetworkFactory
-import ru.musintimur.photoexplorer.utils.logD
 import java.util.concurrent.TimeUnit
-
-private const val TAG = "HomeViewModel"
 
 class HomeViewModel : ViewModel() {
 
@@ -21,35 +18,33 @@ class HomeViewModel : ViewModel() {
 
     private val _photo = MutableLiveData<Photo>().apply {
         CoroutineScope(Dispatchers.Main).launch {
-            value = if (lastPhoto == null
-                        || lastDownload == 0L
-                        || daysGone(lastDownload) > 1)
-                        loadRandomPhoto()?.also {
-                            lastPhoto = it
-                            lastDownload = System.currentTimeMillis()
-                        }
-                    else lastPhoto
+            setPhoto()
         }
     }
     var photo: LiveData<Photo>? = _photo
 
+    suspend fun setPhoto(): Unit = withContext(Dispatchers.Main) {
+        _photo.value = if (lastPhoto == null
+            || lastDownload == 0L
+            || daysGone(lastDownload) > 1
+        )
+            loadRandomPhoto()?.also {
+                lastPhoto = it
+                lastDownload = System.currentTimeMillis()
+            }
+        else lastPhoto
+    }
+
     private suspend fun loadRandomPhoto(): Photo? = withContext(Dispatchers.IO) {
         networkFactory.run {
-            getDataAsync( apiServices.randomPhoto() )?.let { data ->
-                "Json data recieved:\n$data".logD(TAG)
+            getDataAsync(apiServices.randomPhoto())?.let { data ->
                 getPhotosFromJson(data).firstOrNull()
             }
         }
     }
 
-    private fun daysGone(lastTime: Long) : Long {
-        val d1 = TimeUnit.MILLISECONDS.toDays(System.currentTimeMillis())
-        val d2 = TimeUnit.MILLISECONDS.toDays(lastTime)
-        "Today: $d1".logD(TAG)
-        "Old day: $d2".logD(TAG)
-        val days = d1 - d2
-        "Days gone: $days".logD(TAG)
-        return days
-    }
+    private fun daysGone(lastTime: Long): Long =
+        TimeUnit.MILLISECONDS.toDays(System.currentTimeMillis()) -
+                TimeUnit.MILLISECONDS.toDays(lastTime)
 
 }
