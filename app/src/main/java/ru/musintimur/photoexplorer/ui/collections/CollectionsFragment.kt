@@ -70,7 +70,7 @@ class CollectionsFragment : Fragment() {
         collectionsViewModel.getCollections().observe(this, Observer<PagedList<Collection>> {
             collectionsAdapter.submitList(it)
             job = CoroutineScope(Dispatchers.Default).launch {
-                delay(3000)
+                delay(5000)
                 if (it.size == 0) {
                     networkCallback.onError(EmptyResultException(getString(R.string.empty_result)))
                 } else {
