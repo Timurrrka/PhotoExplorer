@@ -26,7 +26,7 @@ class HomeViewModel : ViewModel() {
     suspend fun setPhoto(): Unit = withContext(Dispatchers.Main) {
         _photo.value = if (lastPhoto == null
             || lastDownload == 0L
-            || daysGone(lastDownload) > 1
+            || daysGone(lastDownload) > 0
         )
             loadRandomPhoto()?.also {
                 lastPhoto = it
@@ -45,6 +45,6 @@ class HomeViewModel : ViewModel() {
 
     private fun daysGone(lastTime: Long): Long =
         TimeUnit.MILLISECONDS.toDays(System.currentTimeMillis()) -
-                TimeUnit.MILLISECONDS.toDays(lastTime)
+        TimeUnit.MILLISECONDS.toDays(lastTime)
 
 }
