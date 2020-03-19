@@ -9,7 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -22,7 +22,9 @@ import ru.musintimur.photoexplorer.adapters.PhotosRecyclerViewAdapter
 import ru.musintimur.photoexplorer.data.preferences.Preferences
 import ru.musintimur.photoexplorer.data.preferences.Properties
 import ru.musintimur.photoexplorer.network.EmptyResultException
-import ru.musintimur.photoexplorer.network.NetworkFactory
+import ru.musintimur.photoexplorer.utils.logE
+
+private const val TAG = "PhotoCollectionFragment"
 
 class PhotoCollectionFragment : Fragment() {
 
@@ -31,7 +33,7 @@ class PhotoCollectionFragment : Fragment() {
     private var collectionId: Int = 0
     private var tagName: String = ""
     private lateinit var photoCollectionViewModel: PhotoCollectionViewModel
-    private lateinit var networkCallback: NetworkCallback
+    private lateinit var mainActivity: NetworkCallback
     private val photosRecyclerViewAdapter = PhotosRecyclerViewAdapter()
     private var job: Job? = null
 
@@ -46,8 +48,7 @@ class PhotoCollectionFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         photoCollectionViewModel =
-            ViewModelProviders.of(this).get(PhotoCollectionViewModel::class.java).apply {
-                networkFactory = NetworkFactory(getString(R.string.api_key), networkCallback)
+            ViewModelProvider(this).get(PhotoCollectionViewModel::class.java).apply {
                 colId = collectionId
                 query = tagName
                 getAlbum().observe( this@PhotoCollectionFragment, Observer {
@@ -55,11 +56,17 @@ class PhotoCollectionFragment : Fragment() {
                     job = CoroutineScope(Dispatchers.Default).launch {
                         delay(5000)
                         if (it.size == 0) {
-                            networkCallback.onError(EmptyResultException(getString(R.string.empty_result)))
+                            mainActivity.onError(EmptyResultException(getString(R.string.empty_result)))
                         } else {
-                            networkCallback.onSuccess()
+                            mainActivity.onSuccess()
                         }
                     }
+                })
+                getError().observe(this@PhotoCollectionFragment, Observer {
+                    it?.let {
+                        "error.observe've got value: ${it.message}".logE(TAG)
+                        mainActivity.onError(it)
+                    } ?: mainActivity.onSuccess()
                 })
             }
         return inflater.inflate(R.layout.fragment_photo_collection, container, false)
@@ -86,7 +93,7 @@ class PhotoCollectionFragment : Fragment() {
         if (context !is NetworkCallback) {
             throw RuntimeException(getString(R.string.error_implement, context, "NetworkCallback"))
         } else {
-            networkCallback = context
+            mainActivity = context
         }
     }
 

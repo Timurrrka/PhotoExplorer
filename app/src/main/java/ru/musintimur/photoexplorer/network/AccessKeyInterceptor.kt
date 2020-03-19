@@ -1,8 +1,8 @@
 package ru.musintimur.photoexplorer.network
 
 import okhttp3.*
-import okhttp3.ResponseBody.Companion.toResponseBody
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.ResponseBody.Companion.toResponseBody
 import kotlin.Exception
 
 class AccessKeyInterceptor(private val apiKey: String) : Interceptor {

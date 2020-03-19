@@ -28,13 +28,15 @@ class NetworkFactory(private val apiKey: String, private val networkCallback: Ne
             .addCallAdapterFactory(CoroutineCallAdapterFactory())
             .build()
 
-    private fun getHttpClient() = OkHttpClient().newBuilder()
-        .addInterceptor(AccessKeyInterceptor(apiKey))
-        .build()
+    private fun getHttpClient() =
+        OkHttpClient()
+            .newBuilder()
+            .addInterceptor(AccessKeyInterceptor(apiKey))
+            .build()
 
     fun getDataAsync(
         requestFun: (Response<String>)
-    ) : String? =
+    ): String? =
         try {
             requestFun.run {
                 if (isSuccessful)

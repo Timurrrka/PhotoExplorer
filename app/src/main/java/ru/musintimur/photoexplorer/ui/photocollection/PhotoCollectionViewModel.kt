@@ -1,18 +1,17 @@
 package ru.musintimur.photoexplorer.ui.photocollection
 
+import android.app.Application
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.DataSource
 import androidx.paging.LivePagedListBuilder
 import androidx.paging.PagedList
 import ru.musintimur.photoexplorer.data.photo.Photo
 import ru.musintimur.photoexplorer.data.photo.PhotoDataSource
-import ru.musintimur.photoexplorer.network.NetworkFactory
+import ru.musintimur.photoexplorer.ui.CommonViewModel
 
-class PhotoCollectionViewModel : ViewModel() {
+class PhotoCollectionViewModel(application: Application) : CommonViewModel(application) {
 
-    lateinit var networkFactory: NetworkFactory
     var colId: Int = 0
     var query: String = ""
     var page: Int = 1
@@ -36,7 +35,7 @@ class PhotoCollectionViewModel : ViewModel() {
                 return PhotoDataSource(viewModelScope, networkFactory, colId, query, page)
             }
         }
-        return LivePagedListBuilder<Int, Photo>(dataSourceFactory, config)
+        return LivePagedListBuilder(dataSourceFactory, config)
     }
 
 }

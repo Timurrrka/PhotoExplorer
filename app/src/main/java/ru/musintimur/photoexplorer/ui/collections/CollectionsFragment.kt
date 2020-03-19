@@ -8,10 +8,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import androidx.paging.PagedList
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.fragment_collections.*
 import kotlinx.coroutines.*
@@ -19,11 +18,12 @@ import ru.musintimur.photoexplorer.NetworkCallback
 import ru.musintimur.photoexplorer.OnSearchClick
 import ru.musintimur.photoexplorer.R
 import ru.musintimur.photoexplorer.adapters.CollectionsRecyclerViewAdapter
-import ru.musintimur.photoexplorer.data.collection.Collection
 import ru.musintimur.photoexplorer.data.preferences.Preferences
 import ru.musintimur.photoexplorer.data.preferences.Properties
 import ru.musintimur.photoexplorer.network.EmptyResultException
-import ru.musintimur.photoexplorer.network.NetworkFactory
+import ru.musintimur.photoexplorer.utils.logE
+
+private const val TAG = "CollectionsFragment"
 
 class CollectionsFragment : Fragment() {
 
@@ -34,7 +34,7 @@ class CollectionsFragment : Fragment() {
         )
     }
     private lateinit var collectionsViewModel: CollectionsViewModel
-    private lateinit var networkCallback: NetworkCallback
+    private lateinit var mainActivity: NetworkCallback
     private val collectionsAdapter = CollectionsRecyclerViewAdapter()
     private val args: CollectionsFragmentArgs by navArgs()
     private var tagName: String = ""
@@ -51,9 +51,14 @@ class CollectionsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         collectionsViewModel =
-            ViewModelProviders.of(this).get(CollectionsViewModel::class.java).apply {
-                networkFactory = NetworkFactory(getString(R.string.api_key), networkCallback)
+            ViewModelProvider(this).get(CollectionsViewModel::class.java).apply {
                 query = tagName
+                getError().observe(this@CollectionsFragment, Observer {
+                    it?.let {
+                        "error.observe've got value: ${it.message}".logE(TAG)
+                        mainActivity.onError(it)
+                    } ?: mainActivity.onSuccess()
+                })
             }
 
         return inflater.inflate(R.layout.fragment_collections, container, false)
@@ -67,14 +72,14 @@ class CollectionsFragment : Fragment() {
             val action = CollectionsFragmentDirections.actionCollectionToPhotos(collection.id, collection.title)
             findNavController().navigate(action)
         }
-        collectionsViewModel.getCollections().observe(this, Observer<PagedList<Collection>> {
+        collectionsViewModel.getCollections().observe(this, Observer {
             collectionsAdapter.submitList(it)
             job = CoroutineScope(Dispatchers.Default).launch {
                 delay(5000)
                 if (it.size == 0) {
-                    networkCallback.onError(EmptyResultException(getString(R.string.empty_result)))
+                    mainActivity.onError(EmptyResultException(getString(R.string.empty_result)))
                 } else {
-                    networkCallback.onSuccess()
+                    mainActivity.onSuccess()
                 }
             }
         })
@@ -88,7 +93,7 @@ class CollectionsFragment : Fragment() {
         if (context !is NetworkCallback) {
             throw RuntimeException(getString(R.string.error_implement, context, "NetworkCallback"))
         } else {
-            networkCallback = context
+            mainActivity = context
         }
     }
 

@@ -1,5 +1,6 @@
 package ru.musintimur.photoexplorer.ui.collections
 
+import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -9,11 +10,11 @@ import androidx.paging.PagedList
 import ru.musintimur.photoexplorer.data.collection.Collection
 import ru.musintimur.photoexplorer.data.collection.CollectionDataSource
 import ru.musintimur.photoexplorer.network.NetworkFactory
+import ru.musintimur.photoexplorer.ui.CommonViewModel
 
-class CollectionsViewModel : ViewModel() {
+class CollectionsViewModel(application: Application) : CommonViewModel(application) {
 
-    lateinit var networkFactory: NetworkFactory
-    var query: String = ""
+    lateinit var query: String
     private val _collection: LiveData<PagedList<Collection>>
 
     init {
@@ -34,6 +35,6 @@ class CollectionsViewModel : ViewModel() {
                 return CollectionDataSource(viewModelScope, networkFactory, query)
             }
         }
-        return LivePagedListBuilder<Int, Collection>(dataSourceFactory, config)
+        return LivePagedListBuilder(dataSourceFactory, config)
     }
 }
