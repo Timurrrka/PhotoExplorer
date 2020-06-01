@@ -1,7 +1,5 @@
 package ru.musintimur.photoexplorer
 
-import okhttp3.Response
-
 //интерфейс для настройки поисковой панели
 interface OnSearchClick {
     fun onSearchClick()

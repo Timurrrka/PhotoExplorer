@@ -17,7 +17,6 @@ import androidx.navigation.fragment.navArgs
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.fragment_photo.*
 import kotlinx.android.synthetic.main.item_link_full.*
-import kotlinx.coroutines.Job
 import ru.musintimur.photoexplorer.NetworkCallback
 import ru.musintimur.photoexplorer.OnSearchClick
 import ru.musintimur.photoexplorer.R

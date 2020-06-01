@@ -10,11 +10,11 @@ import ru.musintimur.photoexplorer.data.photo.Photo
 import ru.musintimur.photoexplorer.data.photo.PhotoDataSource
 import ru.musintimur.photoexplorer.ui.CommonViewModel
 
-class PhotoCollectionViewModel(application: Application) : CommonViewModel(application) {
+class PhotoCollectionViewModel(application: Application,
+                               private val collectionId: Int,
+                               private val query: String,
+                               private val page: Int = 1) : CommonViewModel(application) {
 
-    var colId: Int = 0
-    var query: String = ""
-    var page: Int = 1
     private val _album: LiveData<PagedList<Photo>>
 
     init {
@@ -32,7 +32,7 @@ class PhotoCollectionViewModel(application: Application) : CommonViewModel(appli
 
         val dataSourceFactory = object : DataSource.Factory<Int, Photo>() {
             override fun create(): DataSource<Int, Photo> {
-                return PhotoDataSource(viewModelScope, networkFactory, colId, query, page)
+                return PhotoDataSource(viewModelScope, networkFactory, collectionId, query, page)
             }
         }
         return LivePagedListBuilder(dataSourceFactory, config)

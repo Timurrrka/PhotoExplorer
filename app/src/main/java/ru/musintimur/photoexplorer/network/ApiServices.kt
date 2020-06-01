@@ -1,6 +1,5 @@
 package ru.musintimur.photoexplorer.network
 
-
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -12,7 +11,7 @@ interface ApiServices {
     @Headers(HEADER_CONTENT_TYPE, HEADER_ACCEPT_VERSION)
     @GET("photos/random")
     suspend fun randomPhoto(
-        @Query("featured") feautured: Boolean = true,
+        @Query("featured") featured: Boolean = true,
         @Query("count") count: Int = 1
     ): Response<String>
 

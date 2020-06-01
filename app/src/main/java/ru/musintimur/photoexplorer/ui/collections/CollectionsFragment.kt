@@ -51,15 +51,15 @@ class CollectionsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         collectionsViewModel =
-            ViewModelProvider(this).get(CollectionsViewModel::class.java).apply {
-                query = tagName
-                getError().observe(this@CollectionsFragment, Observer {
-                    it?.let {
-                        "error.observe've got value: ${it.message}".logE(TAG)
-                        mainActivity.onError(it)
-                    } ?: mainActivity.onSuccess()
-                })
-            }
+            ViewModelProvider(this, CollectionViewModelFactory(requireActivity().application, tagName))
+                .get(CollectionsViewModel::class.java)
+
+        collectionsViewModel.getError().observe(viewLifecycleOwner, Observer {
+            it?.let {
+                "error.observe've got value: ${it.message}".logE(TAG)
+                mainActivity.onError(it)
+            } ?: mainActivity.onSuccess()
+        })
 
         return inflater.inflate(R.layout.fragment_collections, container, false)
     }
@@ -72,7 +72,7 @@ class CollectionsFragment : Fragment() {
             val action = CollectionsFragmentDirections.actionCollectionToPhotos(collection.id, collection.title)
             findNavController().navigate(action)
         }
-        collectionsViewModel.getCollections().observe(this, Observer {
+        collectionsViewModel.getCollections().observe(viewLifecycleOwner, Observer {
             collectionsAdapter.submitList(it)
             job = CoroutineScope(Dispatchers.Default).launch {
                 delay(5000)

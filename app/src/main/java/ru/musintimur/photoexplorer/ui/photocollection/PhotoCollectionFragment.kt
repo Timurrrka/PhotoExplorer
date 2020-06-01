@@ -48,10 +48,11 @@ class PhotoCollectionFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         photoCollectionViewModel =
-            ViewModelProvider(this).get(PhotoCollectionViewModel::class.java).apply {
-                colId = collectionId
-                query = tagName
-                getAlbum().observe( this@PhotoCollectionFragment, Observer {
+            ViewModelProvider(this, PhotoCollectionViewModelFactory(requireActivity().application, collectionId, tagName))
+                .get(PhotoCollectionViewModel::class.java)
+
+        photoCollectionViewModel.run {
+                getAlbum().observe( viewLifecycleOwner, Observer {
                     photosRecyclerViewAdapter.submitList(it)
                     job = CoroutineScope(Dispatchers.Default).launch {
                         delay(5000)
@@ -62,7 +63,7 @@ class PhotoCollectionFragment : Fragment() {
                         }
                     }
                 })
-                getError().observe(this@PhotoCollectionFragment, Observer {
+                getError().observe( viewLifecycleOwner, Observer {
                     it?.let {
                         "error.observe've got value: ${it.message}".logE(TAG)
                         mainActivity.onError(it)

@@ -3,7 +3,6 @@ package ru.musintimur.photoexplorer.ui.home
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -48,7 +47,7 @@ class HomeFragment : Fragment() {
             ViewModelProvider(this).get(HomeViewModel::class.java)
 
         homeViewModel.run {
-            getPhoto().observe(this@HomeFragment, Observer { photo ->
+            getPhoto().observe(viewLifecycleOwner, Observer { photo ->
                 photo?.let {
                     mainActivity.onSuccess()
                     text_home.text = getString(R.string.photo_of_the_day, photo.author)
@@ -64,7 +63,7 @@ class HomeFragment : Fragment() {
                 } ?: mainActivity.onError(EmptyResultException(getString(R.string.empty_result)))
             })
 
-            getError().observe(this@HomeFragment, Observer {
+            getError().observe(viewLifecycleOwner, Observer {
                 it?.let {
                     "error.observe've got value: ${it.message}".logE(TAG)
                     mainActivity.onError(it)

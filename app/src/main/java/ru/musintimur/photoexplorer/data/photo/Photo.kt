@@ -5,7 +5,6 @@ import kotlinx.android.parcel.Parcelize
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
-import ru.musintimur.photoexplorer.utils.logD
 import ru.musintimur.photoexplorer.utils.logE
 
 @Parcelize
